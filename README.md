@@ -2,6 +2,13 @@
 
 La copia di lavoro è questa cartella, DEFINITIVO. Tutte le modifiche e i deploy successivi partono da qui.
 
+Sito pubblicato: https://amuni-definitivo.vercel.app
+Repository: https://github.com/gaiabono02-maker/amuni_definitivo
+Progetto Vercel: `amuni/amuni-definitivo`.
+
+Il primo deploy in produzione è stato completato l’11 settembre 2026 tramite Vercel CLI. Le sette variabili Supabase sono configurate in Production e Preview; Site URL e redirect Supabase includono il dominio pubblico e localhost:8080.
+La connessione automatica GitHub → Vercel è in attesa dell’installazione dell’app GitHub Vercel per questa repository. Dopo l’autorizzazione, eseguire `vercel git connect https://github.com/gaiabono02-maker/amuni_definitivo.git --yes` da questa cartella. Nel frattempo è possibile pubblicare con `vercel --prod`.
+
 ## Sviluppo locale
 
 Usare Node.js 24 e npm. Eseguire `npm ci`, quindi `npm run dev`.
