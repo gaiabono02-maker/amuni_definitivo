@@ -180,7 +180,7 @@ function Foto({
           src={src}
           alt={alt}
           loading="lazy"
-          className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05]"
+          className="h-full w-full object-cover transition-transform duration-700 ease-out motion-safe:group-hover:scale-[1.025] motion-reduce:transition-none"
         />
       ) : (
         <div className="flex h-full w-full items-center justify-center">
@@ -223,52 +223,61 @@ function Territorio({ p }: { p: DbProduct }) {
   );
 }
 
-function ProdottoCard({
-  p,
-  slug,
-  onInteresse,
-  grande = false,
-}: {
+function Prezzo({ p }: { p: DbProduct }) {
+  if (p.prezzo == null || !Number.isFinite(Number(p.prezzo)) || Number(p.prezzo) <= 0) return null;
+  return <p className="mt-4 text-sm text-muted-foreground">{new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR" }).format(Number(p.prezzo))}</p>;
+}
+
+function ProdottoCard({ p, slug, onInteresse, grande = false }: {
   p: DbProduct;
   slug?: string;
   onInteresse: (p: DbProduct) => void;
   grande?: boolean;
 }) {
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-all duration-500 hover:-translate-y-1 hover:shadow-lg">
-      <Foto
-        src={p.immagine_url}
-        alt={p.nome}
-        className={grande ? "aspect-[4/3]" : "aspect-[4/3] sm:aspect-[4/3]"}
-      />
-      <div className="flex flex-1 flex-col p-5 sm:p-6">
-        <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">
-          {p.categoria}
-        </span>
-        <h3
-          className={`mt-2 font-serif font-bold ${grande ? "text-2xl sm:text-3xl" : "text-2xl sm:text-xl"}`}
-        >
-          {p.nome}
-        </h3>
-        <ImpresaLink nome={p.azienda} slug={slug} className="mt-1 text-sm text-secondary" />
-        <div className="mt-2">
-          <Territorio p={p} />
-        </div>
-        <p className="mt-3 flex-1 text-sm leading-relaxed text-muted-foreground">
-          {p.descrizione}
-        </p>
-        <span className="mt-4 text-sm text-muted-foreground">
-          Prezzo su richiesta
-        </span>
-        <Button
-          className="mt-3 w-full gap-1.5"
-          onClick={() => onInteresse(p)}
-        >
-          Contatta l'impresa <ArrowRight className="h-4 w-4" />
-        </Button>
+    <article className="group flex h-full flex-col">
+      <button type="button" onClick={() => onInteresse(p)} aria-label={`Scopri ${p.nome}`} className="block w-full overflow-hidden rounded-2xl text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-4">
+        <Foto src={p.immagine_url} alt={p.nome} className={grande ? "aspect-[16/10]" : "aspect-[4/3]"} />
+      </button>
+      <div className="flex flex-1 flex-col py-5">
+        <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">{p.categoria}</span>
+        <h3 className="mt-2 font-serif text-2xl leading-tight"><button type="button" onClick={() => onInteresse(p)} className="text-left hover:text-primary">{p.nome}</button></h3>
+        <ImpresaLink nome={p.azienda} slug={slug} className="mt-2 text-base text-secondary" />
+        <div className="mt-2"><Territorio p={p} /></div>
+        <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-muted-foreground">{p.descrizione}</p>
+        <Prezzo p={p} />
+        <button type="button" onClick={() => onInteresse(p)} className="mt-5 inline-flex w-fit items-center gap-2 border-b border-primary/30 pb-1 text-sm font-medium text-primary transition-colors hover:border-primary">
+          Scopri <ArrowRight className="h-4 w-4 motion-safe:transition-transform motion-safe:group-hover:translate-x-1" />
+        </button>
       </div>
     </article>
+  );
+}
 
+function DettaglioProdotto({ prodotto, azienda, onClose, onInteresse }: {
+  prodotto: DbProduct | null;
+  azienda?: DbAzienda;
+  onClose: () => void;
+  onInteresse: (p: DbProduct) => void;
+}) {
+  return (
+    <Dialog open={!!prodotto} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-2xl">
+        {prodotto && <>
+          <DialogHeader>
+            <p className="text-xs uppercase tracking-widest text-primary">{prodotto.categoria} · Contenuti dimostrativi</p>
+            <DialogTitle className="font-serif text-3xl">{prodotto.nome}</DialogTitle>
+            <DialogDescription>Scopri il prodotto e conosci l’impresa che lo realizza.</DialogDescription>
+          </DialogHeader>
+          <Foto src={prodotto.immagine_url} alt={prodotto.nome} className="aspect-[16/10] rounded-xl" />
+          <ImpresaLink nome={prodotto.azienda} slug={azienda?.slug} className="text-lg text-secondary" />
+          <Territorio p={prodotto} />
+          <p className="whitespace-pre-line leading-relaxed text-muted-foreground">{prodotto.descrizione}</p>
+          <Prezzo p={prodotto} />
+          <Button onClick={() => onInteresse(prodotto)} className="gap-2"><HandHeart className="h-4 w-4" /> Sono interessato</Button>
+        </>}
+      </DialogContent>
+    </Dialog>
   );
 }
 
@@ -345,6 +354,7 @@ export function BottegaFeatures() {
   const [aziende, setAziende] = useState<DbAzienda[]>([]);
   const [pdm, setPdm] = useState<DbProdottoMese | null>(null);
   const [loading, setLoading] = useState(true);
+  const [dettaglio, setDettaglio] = useState<DbProduct | null>(null);
   const [selected, setSelected] = useState<DbProduct | null>(null);
 
   const [query, setQuery] = useState("");
@@ -393,8 +403,8 @@ export function BottegaFeatures() {
     [prodotti],
   );
 
-  const inEvidenza = pdm?.prodotti ?? prodotti[0] ?? null;
-  const vetrina = prodotti.filter((p) => p.id !== inEvidenza?.id).slice(0, 4);
+  const inEvidenza = prodotti.find((p) => p.id === pdm?.prodotto_id) ?? prodotti[0] ?? null;
+  const vetrina = prodotti.filter((p) => p.id !== inEvidenza?.id).slice(0, 2);
 
   const visibili = prodotti.filter((p) => {
     const q = query.trim().toLowerCase();
@@ -419,7 +429,7 @@ export function BottegaFeatures() {
     }`;
 
   return (
-    <section id="bottega" className="scroll-mt-16 py-20 lg:py-28">
+    <section id="bottega" className="scroll-mt-16 bg-cream/40 py-20 lg:py-28">
       <div className="mx-auto max-w-7xl px-5 lg:px-8">
         <div className="mb-14 text-center">
           <p className="text-sm font-semibold uppercase tracking-widest text-primary">
@@ -442,20 +452,18 @@ export function BottegaFeatures() {
           <>
             {/* Vetrina editoriale */}
             {inEvidenza && (
-              <div className="grid gap-8 lg:grid-cols-2">
-                <Reveal>
+              <div className={`grid items-start gap-10 lg:gap-16 ${vetrina.length ? "lg:grid-cols-2" : "mx-auto max-w-3xl"}`}>
+                <Reveal className="lg:sticky lg:top-24">
                   <article className="group flex h-full flex-col overflow-hidden rounded-3xl border border-border bg-card shadow-sm transition-all duration-500 hover:shadow-xl">
-                    <Foto
-                      src={inEvidenza.immagine_url}
-                      alt={inEvidenza.nome}
-                      className="aspect-[16/11]"
-                    />
+                    <button type="button" onClick={() => setDettaglio(inEvidenza)} aria-label={`Scopri ${inEvidenza.nome}`} className="text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary">
+                      <Foto src={inEvidenza.immagine_url} alt={inEvidenza.nome} className="aspect-[4/5] sm:aspect-square lg:aspect-[4/5]" />
+                    </button>
                     <div className="flex flex-1 flex-col p-6 sm:p-8 lg:p-10">
                       <span className="inline-flex w-fit rounded-full bg-secondary/15 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-secondary">
                         In evidenza · {inEvidenza.categoria}
                       </span>
                       <h3 className="mt-4 font-serif text-3xl font-bold leading-tight sm:text-4xl">
-                        {inEvidenza.nome}
+                        <button type="button" onClick={() => setDettaglio(inEvidenza)} className="text-left hover:text-primary">{inEvidenza.nome}</button>
                       </h3>
                       <ImpresaLink
                         nome={inEvidenza.azienda}
@@ -466,30 +474,29 @@ export function BottegaFeatures() {
                         <Territorio p={inEvidenza} />
                       </div>
                       <p className="mt-4 flex-1 leading-relaxed text-muted-foreground">
-                        {pdm?.produttore_storia || inEvidenza.descrizione}
+                        {(pdm?.prodotto_id === inEvidenza.id && pdm.produttore_storia) || inEvidenza.descrizione}
                       </p>
-                      <span className="mt-5 text-sm text-muted-foreground">
-                        Prezzo su richiesta · contatta direttamente l'impresa
-                      </span>
+                      <Prezzo p={inEvidenza} />
                       <Button
                         size="lg"
                         className="mt-3 w-full gap-1.5 sm:w-fit"
-                        onClick={() => setSelected(inEvidenza)}
+                        onClick={() => setDettaglio(inEvidenza)}
                       >
-                        <HandHeart className="h-4 w-4" /> Contatta l'impresa
+                        Scopri <ArrowRight className="h-4 w-4" />
                       </Button>
                     </div>
 
                   </article>
                 </Reveal>
 
-                <div className="grid gap-8 sm:grid-cols-2">
+                <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-1">
                   {vetrina.map((p, i) => (
                     <Reveal key={p.id} delay={(i % 2) * 120}>
                       <ProdottoCard
                         p={p}
+                        grande
                         slug={slugOf(p.azienda)}
-                        onInteresse={setSelected}
+                        onInteresse={setDettaglio}
                       />
                     </Reveal>
                   ))}
@@ -523,6 +530,7 @@ export function BottegaFeatures() {
                   {categorie.map((c) => (
                     <button
                       key={c}
+                      aria-pressed={categoria === c}
                       onClick={() => setCategoria(c)}
                       className={`${pill(categoria === c)} shrink-0 whitespace-nowrap`}
                     >
@@ -568,7 +576,7 @@ export function BottegaFeatures() {
 
               {visibili.length === 0 ? (
                 <p className="text-center text-muted-foreground">
-                  Nessun prodotto corrisponde alla ricerca.
+                  {prodotti.length ? "Nessun prodotto corrisponde alla ricerca. Prova a cambiare i filtri." : "La vetrina si sta preparando: presto potrai esplorare qui le produzioni del territorio."}
                 </p>
               ) : (
                 <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
@@ -577,7 +585,7 @@ export function BottegaFeatures() {
                       <ProdottoCard
                         p={p}
                         slug={slugOf(p.azienda)}
-                        onInteresse={setSelected}
+                        onInteresse={setDettaglio}
                       />
                     </Reveal>
                   ))}
@@ -590,6 +598,12 @@ export function BottegaFeatures() {
         <RichiestaProdotto />
       </div>
 
+      <DettaglioProdotto
+        prodotto={dettaglio}
+        azienda={dettaglio ? aziendaOf(dettaglio.azienda) : undefined}
+        onClose={() => setDettaglio(null)}
+        onInteresse={(p) => { setDettaglio(null); setSelected(p); }}
+      />
       <InteresseDialog
         prodotto={selected}
         slug={selected ? (slugOf(selected.azienda) ?? "") : ""}
