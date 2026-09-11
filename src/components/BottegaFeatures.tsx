@@ -18,13 +18,14 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import {
-  fetchProdotti,
   fetchAziende,
   fetchProdottoDelMese,
   type DbProduct,
   type DbAzienda,
   type DbProdottoMese,
 } from "@/lib/catalog";
+
+import { fetchShowcaseProducts, isDemoProduct } from "@/lib/showcase";
 
 /* ---------------- RICHIESTA INTERESSE ---------------- */
 const interesseSchema = z.object({
@@ -274,7 +275,10 @@ function DettaglioProdotto({ prodotto, azienda, onClose, onInteresse }: {
           <Territorio p={prodotto} />
           <p className="whitespace-pre-line leading-relaxed text-muted-foreground">{prodotto.descrizione}</p>
           <Prezzo p={prodotto} />
-          <Button onClick={() => onInteresse(prodotto)} className="gap-2"><HandHeart className="h-4 w-4" /> Sono interessato</Button>
+          {isDemoProduct(prodotto) ? <div className="space-y-3">
+            <p className="text-sm text-muted-foreground">Prodotto e impresa dimostrativi · fotografia illustrativa. Puoi inviare una richiesta alla piattaforma tramite il modulo qui sotto.</p>
+            <Button asChild><a href="#richiesta-prodotto" onClick={onClose}>Invia una richiesta</a></Button>
+          </div> : <Button onClick={() => onInteresse(prodotto)} className="gap-2"><HandHeart className="h-4 w-4" /> Sono interessato</Button>}
         </>}
       </DialogContent>
     </Dialog>
@@ -323,7 +327,7 @@ function RichiestaProdotto() {
   };
 
   return (
-    <div className="mt-20 rounded-2xl border border-border bg-muted/40 p-8 lg:p-10">
+    <div id="richiesta-prodotto" className="scroll-mt-24 mt-20 rounded-2xl border border-border bg-muted/40 p-8 lg:p-10">
       <div className="mx-auto max-w-2xl text-center">
         <h3 className="font-serif text-2xl font-bold">
           Cerchi qualcosa di particolare?
@@ -364,7 +368,7 @@ export function BottegaFeatures() {
 
   useEffect(() => {
     let active = true;
-    Promise.all([fetchProdotti(), fetchAziende(), fetchProdottoDelMese()])
+    Promise.all([fetchShowcaseProducts(), fetchAziende(), fetchProdottoDelMese()])
       .then(([p, a, m]) => {
         if (!active) return;
         setProdotti(p);

@@ -11,8 +11,6 @@ import {
   Wheat,
   Nut,
   ArrowRight,
-  Clock,
-  CalendarDays,
   Heart,
   Check,
   Sparkles,
@@ -26,6 +24,7 @@ import {
   CartProvider,
 } from "@/components/CartContext";
 import { CartDrawer } from "@/components/CartDrawer";
+import { BlogSection } from "@/components/BlogSection";
 import { BottegaFeatures } from "@/components/BottegaFeatures";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -82,12 +81,8 @@ const steps = [
   { n: "3", title: "Entra nel network", text: "Diventi parte attiva della rete A.M.U.N.Ì. e accedi a nuove opportunità." },
 ];
 
-const blogFiltri = ["Tutti", "Ricette", "Storie di Produttori", "Stagionalità"] as const;
-
 type PianoSostenitore = {
   nome: string;
-  prezzo: string;
-  periodo: string;
   descrizione: string;
   benefici: React.ReactNode[];
   evidenza?: boolean;
@@ -96,8 +91,6 @@ type PianoSostenitore = {
 const pianiSostenitore: PianoSostenitore[] = [
   {
     nome: "Sostenitore",
-    prezzo: "€45",
-    periodo: "ogni 3 mesi",
     descrizione: "Il piano più scelto da chi crede nel progetto.",
     benefici: [
       "Newsletter esclusiva del network",
@@ -111,8 +104,6 @@ const pianiSostenitore: PianoSostenitore[] = [
   },
   {
     nome: "Ambasciatore",
-    prezzo: "€100",
-    periodo: "all'anno",
     descrizione: "Per partner e aziende che vogliono fare la differenza.",
     benefici: [
       "Tutti i vantaggi del piano Sostenitore",
@@ -121,24 +112,6 @@ const pianiSostenitore: PianoSostenitore[] = [
       <span key="box-stag"><strong className="underline decoration-2 underline-offset-2">4 box stagionali</strong> di prodotti del territorio</span>,
     ],
   },
-];
-
-type Articolo = {
-  emoji: string;
-  categoria: "Ricette" | "Storie di Produttori" | "Stagionalità";
-  titolo: string;
-  estratto: string;
-  data: string;
-  lettura: string;
-  featured?: boolean;
-};
-
-const articoli: Articolo[] = [
-  { emoji: "🍷", categoria: "Storie di Produttori", titolo: "Tre generazioni di vino: la famiglia Bianchi tra i vigneti agrigentini", estratto: "Un viaggio nella storia di una famiglia che ha fatto del Nero d'Avola la propria identità, tramandando la passione per la terra.", data: "12 maggio 2026", lettura: "6 min", featured: true },
-  { emoji: "🫒", categoria: "Ricette", titolo: "Bruschetta con olio Nocellara e pomodorini di Pachino: la ricetta dell'estate", estratto: "Pochi ingredienti, sapori autentici: la bruschetta perfetta che esalta l'olio extravergine siciliano.", data: "8 maggio 2026", lettura: "4 min" },
-  { emoji: "🌿", categoria: "Stagionalità", titolo: "Maggio in Sicilia: cosa raccolgono le nostre aziende adesso", estratto: "Dalle fave novelle ai primi agrumi tardivi: scopri i prodotti di stagione del mese.", data: "5 maggio 2026", lettura: "3 min" },
-  { emoji: "🍋", categoria: "Storie di Produttori", titolo: "L'agrumeto di Lorenzo: quando la tradizione incontra il biologico", estratto: "La storia di un giovane agricoltore che ha convertito l'agrumeto di famiglia al biologico.", data: "2 maggio 2026", lettura: "5 min" },
-  { emoji: "🫙", categoria: "Ricette", titolo: "Pasta con pesto di pistacchio e olio EVO: 10 minuti, sapori veri", estratto: "Una ricetta veloce e ricca di gusto che celebra due eccellenze del territorio siciliano.", data: "28 aprile 2026", lettura: "4 min" },
 ];
 
 const iscrizioneSchema = z.object({
@@ -628,12 +601,6 @@ function SostenitoriSection() {
                   </span>
                 )}
                 <h3 className="font-serif text-2xl font-bold">{p.nome}</h3>
-                <div className="mt-4 flex items-end gap-1.5">
-                  <span className="font-serif text-4xl font-bold">{p.prezzo}</span>
-                  <span className={`pb-1 text-sm ${p.evidenza ? "text-primary-foreground/80" : "text-muted-foreground"}`}>
-                    {p.periodo}
-                  </span>
-                </div>
                 <p className={`mt-3 text-sm leading-relaxed ${p.evidenza ? "text-primary-foreground/85" : "text-muted-foreground"}`}>
                   {p.descrizione}
                 </p>
@@ -664,91 +631,6 @@ function SostenitoriSection() {
           I pagamenti online saranno attivati a breve. Per sostenerci subito,{" "}
           <a href="#contatti" className="font-semibold text-primary hover:underline">contattaci</a>.
         </p>
-      </div>
-    </section>
-  );
-}
-
-function BlogSection() {
-  const [filtro, setFiltro] = useState<(typeof blogFiltri)[number]>("Tutti");
-  const featured = articoli.find((a) => a.featured)!;
-  const resto = articoli.filter((a) => !a.featured);
-  const visibili = resto.filter((a) => filtro === "Tutti" || a.categoria === filtro);
-  const showFeatured = filtro === "Tutti" || featured.categoria === filtro;
-
-  return (
-    <section id="blog" className="scroll-mt-16 bg-muted/40 py-20 lg:py-28">
-      <div className="mx-auto max-w-7xl px-5 lg:px-8">
-        <div className="mb-10 text-center">
-          <p className="text-sm font-semibold uppercase tracking-widest text-primary">Il Blog</p>
-          <h2 className="mt-2 text-3xl font-bold sm:text-4xl">Dalla terra alla tavola</h2>
-          <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
-            Storie, ricette e stagionalità dal cuore agricolo della Sicilia.
-          </p>
-        </div>
-
-        <div className="mb-10 flex flex-wrap justify-center gap-3">
-          {blogFiltri.map((f) => (
-            <button
-              key={f}
-              onClick={() => setFiltro(f)}
-              className={`rounded-full border px-5 py-2 text-sm font-medium transition-colors ${
-                filtro === f
-                  ? "border-primary bg-primary text-primary-foreground"
-                  : "border-border bg-card text-muted-foreground hover:border-primary hover:text-primary"
-              }`}
-            >
-              {f}
-            </button>
-          ))}
-        </div>
-
-        {showFeatured && (
-          <Reveal>
-            <article className="mb-8 grid overflow-hidden rounded-2xl border border-border bg-card shadow-sm lg:grid-cols-2">
-              <div className="flex aspect-video items-center justify-center bg-gradient-to-br from-primary/20 via-cream to-secondary/20 text-7xl lg:aspect-auto">
-                <span aria-hidden>{featured.emoji}</span>
-              </div>
-              <div className="flex flex-col justify-center p-8 lg:p-10">
-                <div className="flex items-center gap-2 text-xs">
-                  <span className="rounded-full bg-primary/10 px-3 py-1 font-medium text-primary">{featured.categoria}</span>
-                  <span className="font-semibold uppercase tracking-wider text-secondary">In evidenza</span>
-                </div>
-                <h3 className="mt-4 font-serif text-2xl font-bold leading-tight sm:text-3xl">{featured.titolo}</h3>
-                <p className="mt-3 text-muted-foreground">{featured.estratto}</p>
-                <div className="mt-4 flex items-center gap-4 text-xs text-muted-foreground">
-                  <span className="flex items-center gap-1.5"><CalendarDays className="h-4 w-4" /> {featured.data}</span>
-                  <span className="flex items-center gap-1.5"><Clock className="h-4 w-4" /> {featured.lettura} di lettura</span>
-                </div>
-                <Button className="mt-6 w-fit gap-1.5">Leggi di più <ArrowRight className="h-4 w-4" /></Button>
-              </div>
-            </article>
-          </Reveal>
-        )}
-
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {visibili.map((a, i) => (
-            <Reveal key={a.titolo} delay={(i % 3) * 100}>
-              <article className="flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-transform hover:-translate-y-1">
-                <div className="flex aspect-[16/9] items-center justify-center bg-gradient-to-br from-secondary/15 via-cream to-primary/15 text-5xl">
-                  <span aria-hidden>{a.emoji}</span>
-                </div>
-                <div className="flex flex-1 flex-col p-6">
-                  <span className="w-fit rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">{a.categoria}</span>
-                  <h3 className="mt-3 font-serif text-lg font-bold leading-tight">{a.titolo}</h3>
-                  <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">{a.estratto}</p>
-                  <div className="mt-4 flex items-center gap-4 text-xs text-muted-foreground">
-                    <span className="flex items-center gap-1.5"><CalendarDays className="h-4 w-4" /> {a.data}</span>
-                    <span className="flex items-center gap-1.5"><Clock className="h-4 w-4" /> {a.lettura}</span>
-                  </div>
-                  <a href="#blog" className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:gap-2.5 transition-all">
-                    Leggi di più <ArrowRight className="h-4 w-4" />
-                  </a>
-                </div>
-              </article>
-            </Reveal>
-          ))}
-        </div>
       </div>
     </section>
   );
