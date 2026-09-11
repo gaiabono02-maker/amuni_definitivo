@@ -1,3 +1,4 @@
+import { fetchShowcaseCompany, fetchShowcaseCompanyProducts, isDemoCompany, isDemoProduct } from "@/lib/showcase";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState, type FormEvent } from "react";
 import {
@@ -29,8 +30,6 @@ import { CartDrawer } from "@/components/CartDrawer";
 import { formatPrice } from "@/components/CartContext";
 import { supabase } from "@/integrations/supabase/client";
 import {
-  fetchAzienda,
-  fetchProdottiByAzienda,
   type DbAzienda,
   type DbProduct,
 } from "@/lib/catalog";
@@ -69,9 +68,13 @@ function AziendaPage() {
   useEffect(() => {
     let active = true;
     setLoading(true);
+    setNotFound(false);
+    setAzienda(null);
+    setProdotti([]);
+    setSelected(null);
     (async () => {
       try {
-        const a = await fetchAzienda(slug);
+        const a = await fetchShowcaseCompany(slug);
         if (!active) return;
         if (!a) {
           setNotFound(true);
@@ -79,7 +82,7 @@ function AziendaPage() {
           return;
         }
         setAzienda(a);
-        const p = await fetchProdottiByAzienda(a.nome);
+        const p = await fetchShowcaseCompanyProducts(a);
         if (!active) return;
         setProdotti(p);
       } catch {
@@ -133,6 +136,7 @@ function AziendaPage() {
                       <Leaf className="h-7 w-7 text-primary" />
                     )}
                   </div>
+                  {isDemoCompany(azienda) && <p className="mt-4 text-xs uppercase tracking-wider text-cream/80">Anteprima della piattaforma · Impresa e prodotti dimostrativi</p>}
                   <h1 className="mt-4 font-serif text-4xl font-bold">{azienda.nome}</h1>
                   <div className="mt-3 flex flex-wrap gap-2 text-xs">
                     {azienda.settore && (
@@ -168,19 +172,19 @@ function AziendaPage() {
                     )}
                   </div>
                 </div>
-                <Link
+                {!isDemoCompany(azienda) && <Link
                   to="/aziende/$slug/admin"
                   params={{ slug }}
                   className="inline-flex items-center gap-2 self-start rounded-md border border-cream/40 px-4 py-2 text-sm font-medium text-cream transition-colors hover:bg-cream hover:text-brown"
                 >
                   <Lock className="h-4 w-4" /> Area Azienda
-                </Link>
+                </Link>}
               </div>
             )}
           </div>
         </section>
 
-        {azienda && (
+        {azienda && !loading && !notFound && (
           <section className="py-16 lg:py-20">
             <div className="mx-auto max-w-7xl px-5 lg:px-8">
               <h2 className="font-serif text-2xl font-bold sm:text-3xl">I prodotti</h2>
@@ -226,9 +230,9 @@ function AziendaPage() {
                                 Prezzo su richiesta
                               </span>
                             )}
-                            <Button size="sm" onClick={() => setSelected(p)}>
+                            {isDemoProduct(p) ? <Button size="sm" asChild><a href="/#richiesta-prodotto">Invia una richiesta</a></Button> : <Button size="sm" onClick={() => setSelected(p)}>
                               <HandHeart className="h-4 w-4" /> Sono interessato
-                            </Button>
+                            </Button>}
                           </div>
                         </div>
                       </div>

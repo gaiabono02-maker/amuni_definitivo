@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, Leaf, MapPin } from "lucide-react";
-import { fetchAziende, type DbAzienda, type DbProduct } from "@/lib/catalog";
-import { fetchShowcaseProducts, isDemoProduct } from "@/lib/showcase";
+import {  type DbAzienda, type DbProduct } from "@/lib/catalog";
+import { fetchShowcaseProducts, fetchShowcaseCompanies, isDemoProduct } from "@/lib/showcase";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 export function BlogSection() {
@@ -14,7 +14,7 @@ export function BlogSection() {
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     let active = true;
-    Promise.all([fetchShowcaseProducts(), fetchAziende()])
+    Promise.all([fetchShowcaseProducts(), fetchShowcaseCompanies()])
       .then(([p, a]) => { if (active) { setProdotti(p); setAziende(a); } })
       .catch(() => { if (active) setErrore(true); })
       .finally(() => { if (active) setLoading(false); });

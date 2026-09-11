@@ -1,5 +1,5 @@
 import { imprese } from "@/data/network";
-import { fetchProdotti, type DbProduct } from "@/lib/catalog";
+import { fetchProdotti, fetchAziende, fetchAzienda, fetchProdottiByAzienda, type DbAzienda, type DbProduct } from "@/lib/catalog";
 
 const immagini = ["vino", "olio", "agrumi", "grani", "mandorle", "ortaggi"];
 const categorie = ["Vino", "Olio", "Ortofrutta", "Cereali", "Altro", "Ortofrutta"];
@@ -22,4 +22,25 @@ export const isDemoProduct = (p: DbProduct) => p.id.startsWith("anteprima-");
 export async function fetchShowcaseProducts(): Promise<DbProduct[]> {
   const prodotti = await fetchProdotti();
   return prodotti.length ? prodotti : demoProdotti;
+}
+
+export const demoAziende: DbAzienda[] = imprese.map((impresa, i) => ({
+  id: `anteprima-impresa-${i}`, nome: impresa.nome,
+  slug: impresa.nome.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""),
+  descrizione: impresa.desc, provincia: impresa.provincia, comune: "",
+  settore: impresa.settore, certificazioni: [], logo_url: null,
+  sito_web: null, instagram: null, facebook: null, pubblica: true,
+}));
+export const isDemoCompany = (a: DbAzienda) => a.id.startsWith("anteprima-impresa-");
+export async function fetchShowcaseCompanies(): Promise<DbAzienda[]> {
+  const aziende = await fetchAziende();
+  return aziende.length ? aziende : demoAziende;
+}
+export async function fetchShowcaseCompany(slug: string): Promise<DbAzienda | null> {
+  const azienda = await fetchAzienda(slug);
+  if (azienda) return azienda;
+  return (await fetchShowcaseCompanies()).find(a => a.slug === slug) ?? null;
+}
+export async function fetchShowcaseCompanyProducts(a: DbAzienda): Promise<DbProduct[]> {
+  return isDemoCompany(a) ? demoProdotti.filter(p => p.azienda === a.nome) : fetchProdottiByAzienda(a.nome);
 }

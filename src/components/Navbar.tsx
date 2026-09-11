@@ -1,8 +1,9 @@
+import { fetchShowcaseCompanies } from "@/lib/showcase";
 import { useState, useEffect, useRef } from "react";
 import { Menu, X, Leaf, ShoppingCart, ChevronDown } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useCart } from "@/components/CartContext";
-import { fetchAziende, type DbAzienda } from "@/lib/catalog";
+import { type DbAzienda } from "@/lib/catalog";
 
 const links = [
   { href: "/#progetto", label: "Il Progetto" },
@@ -19,6 +20,7 @@ export function Navbar() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [aziende, setAziende] = useState<DbAzienda[]>([]);
+  const [mobileAzOpen, setMobileAzOpen] = useState(false);
   const [azOpen, setAzOpen] = useState(false);
   const azRef = useRef<HTMLLIElement>(null);
   const { count, open: openCart } = useCart();
@@ -31,7 +33,7 @@ export function Navbar() {
   }, []);
 
   useEffect(() => {
-    fetchAziende().then(setAziende).catch(() => setAziende([]));
+    fetchShowcaseCompanies().then(setAziende).catch(() => setAziende([]));
   }, []);
 
   useEffect(() => {
@@ -75,8 +77,11 @@ export function Navbar() {
               </a>
             </li>
           ))}
-          <li ref={azRef} className="relative">
+          <li ref={azRef} className="relative" onKeyDown={(e) => { if (e.key === "Escape") { setAzOpen(false); azRef.current?.querySelector("button")?.focus(); } }}>
             <button
+              aria-expanded={azOpen}
+              aria-controls="imprese-desktop"
+              onKeyDown={(e) => { if (e.key === "Escape") setAzOpen(false); }}
               onClick={() => setAzOpen((o) => !o)}
               className={`inline-flex items-center gap-1 text-sm font-medium transition-colors hover:text-primary ${
                 scrolled ? "text-brown" : "text-cream"
@@ -86,7 +91,7 @@ export function Navbar() {
               <ChevronDown className={`h-4 w-4 transition-transform ${azOpen ? "rotate-180" : ""}`} />
             </button>
             {azOpen && (
-              <ul className="absolute right-0 top-full mt-2 max-h-80 w-60 overflow-auto rounded-xl border border-border bg-card p-2 shadow-lg">
+              <ul id="imprese-desktop" className="absolute right-0 top-full mt-2 max-h-80 w-60 overflow-auto rounded-xl border border-border bg-card p-2 shadow-lg">
                 <li>
                   <a
                     href="/#imprese"
@@ -130,7 +135,8 @@ export function Navbar() {
             )}
           </button>
           <button
-            aria-label="Apri menu"
+            aria-label={open ? "Chiudi menu" : "Apri menu"}
+            aria-expanded={open}
             onClick={() => setOpen((o) => !o)}
             className={`lg:hidden ${scrolled || open ? "text-brown" : "text-cream"}`}
           >
@@ -140,7 +146,7 @@ export function Navbar() {
       </nav>
 
       {open && (
-        <ul className="flex flex-col gap-1 border-t border-border bg-cream px-5 pb-4 pt-2 lg:hidden">
+        <ul className="max-h-[calc(100dvh-64px)] overflow-y-auto flex flex-col gap-1 border-t border-border bg-cream px-5 pb-4 pt-2 lg:hidden">
           {links.map((l) => (
             <li key={l.href}>
               <a
@@ -153,9 +159,10 @@ export function Navbar() {
             </li>
           ))}
           <li className="mt-1 border-t border-border pt-2">
-            <p className="px-3 py-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Le Imprese
-            </p>
+            <button aria-expanded={mobileAzOpen} aria-controls="imprese-mobile" onClick={() => setMobileAzOpen(o => !o)} className="flex w-full items-center justify-between rounded-md px-3 py-2.5 text-sm font-medium text-brown">
+              Le Imprese <ChevronDown className={`h-4 w-4 transition-transform ${mobileAzOpen ? "rotate-180" : ""}`} />
+            </button>
+            {mobileAzOpen && <div id="imprese-mobile" className="pl-3">
             <a
               href="/#imprese"
               onClick={() => setOpen(false)}
@@ -174,6 +181,7 @@ export function Navbar() {
                   {a.nome}
                 </Link>
             ))}
+            </div>}
           </li>
         </ul>
       )}

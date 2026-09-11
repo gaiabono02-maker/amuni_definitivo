@@ -18,14 +18,13 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import {
-  fetchAziende,
   fetchProdottoDelMese,
   type DbProduct,
   type DbAzienda,
   type DbProdottoMese,
 } from "@/lib/catalog";
 
-import { fetchShowcaseProducts, isDemoProduct } from "@/lib/showcase";
+import { fetchShowcaseProducts, fetchShowcaseCompanies, isDemoProduct } from "@/lib/showcase";
 
 /* ---------------- RICHIESTA INTERESSE ---------------- */
 const interesseSchema = z.object({
@@ -368,7 +367,7 @@ export function BottegaFeatures() {
 
   useEffect(() => {
     let active = true;
-    Promise.all([fetchShowcaseProducts(), fetchAziende(), fetchProdottoDelMese()])
+    Promise.all([fetchShowcaseProducts(), fetchShowcaseCompanies(), fetchProdottoDelMese()])
       .then(([p, a, m]) => {
         if (!active) return;
         setProdotti(p);
