@@ -27,8 +27,8 @@ import { CartDrawer } from "@/components/CartDrawer";
 import { BlogSection } from "@/components/BlogSection";
 import { BottegaFeatures } from "@/components/BottegaFeatures";
 import { toast } from "sonner";
-import { z } from "zod";
-import { supabase } from "@/integrations/supabase/client";
+import { iscrizioneSchema } from "@/lib/iscrizione.schema";
+import { submitApplication } from "@/lib/iscrizione.functions";
 import { AnimatedCounter } from "@/components/AnimatedCounter";
 import { SicilyMap } from "@/components/SicilyMap";
 import { SeasonalCalendar } from "@/components/SeasonalCalendar";
@@ -114,14 +114,6 @@ const pianiSostenitore: PianoSostenitore[] = [
   },
 ];
 
-const iscrizioneSchema = z.object({
-  nome: z.string().trim().min(1, "Inserisci il tuo nome").max(100),
-  azienda: z.string().trim().min(1, "Inserisci il nome dell'azienda").max(150),
-  settore: z.string().trim().max(100).optional(),
-  provincia: z.string().trim().max(50).optional(),
-  email: z.string().trim().email("Inserisci un'email valida").max(255),
-  messaggio: z.string().trim().max(1000).optional(),
-});
 
 function Index() {
   const [sent, setSent] = useState(false);
@@ -151,18 +143,20 @@ function Index() {
     }
 
     setLoading(true);
-    const { error } = await supabase.from("iscrizioni").insert(parsed.data);
-    setLoading(false);
-
-    if (error) {
+    try {
+      const { emailSent } = await submitApplication({ data: parsed.data });
+      setSent(true);
+      form.reset();
+      toast.success("Candidatura inviata con successo!");
+      if (!emailSent) {
+        toast.info("Candidatura ricevuta. La mail di conferma non è stata inviata, ma ti ricontatteremo a breve.");
+      }
+      setTimeout(() => setSent(false), 6000);
+    } catch {
       toast.error("Si è verificato un errore. Riprova più tardi.");
-      return;
+    } finally {
+      setLoading(false);
     }
-
-    setSent(true);
-    form.reset();
-    toast.success("Candidatura inviata con successo!");
-    setTimeout(() => setSent(false), 6000);
   };
 
   return (

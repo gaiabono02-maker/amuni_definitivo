@@ -46,3 +46,15 @@ Il vecchio database è distinto da questo progetto: record, account e file caric
 L’endpoint `/api/notify-stato` rimane quello originale: risponde correttamente ma l’invio email reale non è implementato.
 
 Configurazione di hosting: https://vercel.com/docs/frameworks/full-stack/tanstack-start
+
+## Conferma candidatura via email
+
+Il modulo «Invia la candidatura» salva l'iscrizione dal server e poi invia una
+conferma personalizzata con una breve presentazione di A.M.U.N.Ì.
+Configurare in locale e su Vercel le variabili server `AMUNI_SMTP_HOST`,
+`AMUNI_SMTP_PORT` (465 per TLS diretto, 587 per STARTTLS), `AMUNI_SMTP_USER`,
+`AMUNI_SMTP_PASSWORD` e `AMUNI_NOREPLY_EMAIL`. Il mittente no-reply deve essere
+autorizzato dal provider SMTP. Non usare il prefisso `VITE_` per queste variabili.
+Se l'email non parte, la candidatura resta salvata e il modulo avvisa l'utente.
+La consegna reale richiede credenziali SMTP configurate e una prova su una
+casella di test dopo il deploy.
