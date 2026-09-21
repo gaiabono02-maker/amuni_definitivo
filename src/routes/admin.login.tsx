@@ -8,15 +8,15 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/login")({
+  ssr: false,
   head: () => ({
-    meta: [{ title: "Area Riservata — A.M.U.N.Ì." }],
+    meta: [{ title: "Accesso amministratore — A.M.U.N.Ì." }, { name: "robots", content: "noindex, nofollow" }],
   }),
   component: AdminLogin,
 });
 
 function AdminLogin() {
   const navigate = useNavigate();
-  const [mode, setMode] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -25,20 +25,14 @@ function AdminLogin() {
     e.preventDefault();
     setLoading(true);
     try {
-      if (mode === "login") {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
-        navigate({ to: "/admin" });
-      } else {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: { emailRedirectTo: window.location.origin + "/admin" },
-        });
-        if (error) throw error;
-        toast.success("Account creato. Ora puoi accedere.");
-        setMode("login");
+      const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+      if (error) throw new Error("Email o password non corretti.");
+      const { data: role, error: roleError } = await supabase.from("user_roles").select("role").eq("user_id",data.user.id).eq("role","admin").maybeSingle();
+      if (roleError || !role) {
+        await supabase.auth.signOut();
+        throw new Error("Questo account non ha i permessi di amministratore.");
       }
+      navigate({ to: "/admin" });
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Errore. Riprova.";
       toast.error(msg);
@@ -48,17 +42,15 @@ function AdminLogin() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-cream px-4">
+    <div className="flex min-h-screen items-center justify-center bg-depth px-4 py-12">
       <div className="w-full max-w-sm rounded-2xl border border-border bg-card p-8 shadow-lg">
         <div className="mb-6 flex flex-col items-center gap-3 text-center">
-          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground">
+          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-navy text-gold">
             <Leaf className="h-6 w-6" />
           </span>
-          <h1 className="font-serif text-2xl font-bold text-brown">Area Riservata</h1>
+          <h1 className="font-serif text-2xl font-bold text-brown">Area amministratore</h1>
           <p className="text-sm text-muted-foreground">
-            {mode === "login"
-              ? "Accedi per gestire iscrizioni e acquirenti."
-              : "Crea un account amministratore."}
+            Accedi per vedere tutti i clienti registrati e le iscrizioni delle aziende.
           </p>
         </div>
 
@@ -67,6 +59,7 @@ function AdminLogin() {
             <Label htmlFor="email">Email</Label>
             <Input
               id="email"
+              autoComplete="username"
               type="email"
               required
               value={email}
@@ -78,6 +71,7 @@ function AdminLogin() {
             <Label htmlFor="password">Password</Label>
             <Input
               id="password"
+              autoComplete="current-password"
               type="password"
               required
               minLength={6}
@@ -87,23 +81,12 @@ function AdminLogin() {
             />
           </div>
           <Button type="submit" className="w-full" disabled={loading}>
-            {loading
-              ? "Attendere..."
-              : mode === "login"
-                ? "Accedi"
-                : "Crea account"}
+            {loading ? "Accesso in corso…" : "Accedi"}
           </Button>
         </form>
 
-        <button
-          type="button"
-          onClick={() => setMode((m) => (m === "login" ? "signup" : "login"))}
-          className="mt-5 w-full text-center text-sm text-primary hover:underline"
-        >
-          {mode === "login"
-            ? "Non hai un account? Registrati"
-            : "Hai già un account? Accedi"}
-        </button>
+        <p className="mt-5 text-center text-xs text-muted-foreground">Accesso riservato agli amministratori autorizzati.</p>
+        <a href="/" className="mt-4 block text-center text-sm text-primary hover:underline">Torna al sito</a>
       </div>
     </div>
   );

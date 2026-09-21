@@ -473,7 +473,7 @@ function Index() {
             <p className="mt-2">
               © {new Date().getFullYear()} Associazione Forma Mentis OdV. Tutti i diritti riservati.
               {" · "}
-              <a href="/admin/login" className="hover:text-primary">Area Riservata</a>
+              <a href="/admin/login" className="hover:text-primary">Area amministratore</a>
             </p>
           </div>
         </div>

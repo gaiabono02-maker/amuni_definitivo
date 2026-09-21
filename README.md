@@ -41,7 +41,7 @@ Progetto: `jhbjimtznbeehcctsdgd`.
 Le sette migrazioni originali in `supabase/migrations` sono state applicate al nuovo database l’11 settembre 2026, creando anche il bucket pubblico `catalogo`.
 Le migrazioni sono state applicate tramite Management API in una transazione; la cronologia della CLI Supabase non è stata inizializzata. Non rieseguire le migrazioni sullo stesso database senza prima allineare la cronologia.
 
-Il vecchio database è distinto da questo progetto: record, account e file caricati nel vecchio storage non sono contenuti nella copia dei sorgenti e non sono stati trasferiti. Il nuovo database parte vuoto. L’account amministratore andrà configurato quando sarà indicata l’identità da abilitare.
+Il vecchio database è distinto da questo progetto: record, account e file caricati nel vecchio storage non sono contenuti nella copia dei sorgenti e non sono stati trasferiti. Il nuovo database parte vuoto. L’account della proprietaria è abilitato con il ruolo `admin`. Le credenziali iniziali sono conservate separatamente dal repository.
 
 L’endpoint `/api/notify-stato` rimane quello originale: risponde correttamente ma l’invio email reale non è implementato.
 
@@ -58,3 +58,16 @@ autorizzato dal provider SMTP. Non usare il prefisso `VITE_` per queste variabil
 Se l'email non parte, la candidatura resta salvata e il modulo avvisa l'utente.
 La consegna reale richiede credenziali SMTP configurate e una prova su una
 casella di test dopo il deploy.
+
+## Area amministratore
+
+Accesso: https://amuni-definitivo.vercel.app/admin/login. Solo gli account con ruolo `admin` possono leggere gli elenchi completi; i permessi sono verificati anche dalle policy Supabase.
+
+- **Clienti registrati**: tutti i profili, compresi quelli senza ordini o piano, con ricerca, filtro provincia, scheda contatto e CSV dei risultati filtrati.
+- **Iscrizioni aziende**: candidature ricevute dal modulo pubblico, ricerca, filtro stato, esportazione CSV e aggiornamento della valutazione.
+- **Aggiorna dati** ricarica le nuove iscrizioni; l’orario dell’ultimo aggiornamento è visibile nel pannello.
+- **Il mio account** permette di cambiare la password.
+
+I profili vengono creati dal trigger `on_auth_user_created`; le candidature aziendali sono salvate in `iscrizioni`. Gli elenchi vengono letti a blocchi ordinati e mostrati su pagine da 20, senza fermarsi al limite predefinito dell’API.
+
+Verifica della lettura paginata: `node --test scripts/admin-pagination.test.mjs`.
