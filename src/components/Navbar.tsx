@@ -1,9 +1,7 @@
-import { fetchShowcaseCompanies } from "@/lib/showcase";
 import { useState, useEffect, useRef } from "react";
 import { Menu, X, Leaf, ShoppingCart, ChevronDown } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useCart } from "@/components/CartContext";
-import { type DbAzienda } from "@/lib/catalog";
 
 const links = [
   { href: "/#progetto", label: "Il Progetto" },
@@ -19,7 +17,6 @@ const links = [
 export function Navbar() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [aziende, setAziende] = useState<DbAzienda[]>([]);
   const [mobileAzOpen, setMobileAzOpen] = useState(false);
   const [azOpen, setAzOpen] = useState(false);
   const azRef = useRef<HTMLLIElement>(null);
@@ -30,10 +27,6 @@ export function Navbar() {
     onScroll();
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  useEffect(() => {
-    fetchShowcaseCompanies().then(setAziende).catch(() => setAziende([]));
   }, []);
 
   useEffect(() => {
@@ -101,19 +94,8 @@ export function Navbar() {
                     Tutte le imprese
                   </a>
                 </li>
-                {aziende.length > 0 && <li className="my-1 border-t border-border" />}
-                {aziende.map((a) => (
-                  <li key={a.id}>
-                    <Link
-                      to="/aziende/$slug"
-                      params={{ slug: a.slug }}
-                      onClick={() => setAzOpen(false)}
-                      className="block rounded-md px-3 py-2 text-sm text-brown hover:bg-muted"
-                    >
-                      {a.nome}
-                    </Link>
-                  </li>
-                ))}
+                <li><a href="/#aderire" onClick={() => setAzOpen(false)} className="block rounded-md px-3 py-2 text-sm text-brown hover:bg-muted">Come aderire</a></li>
+                <li className="mt-1 border-t border-border pt-1"><Link to="/iscrizione-impresa" onClick={() => setAzOpen(false)} className="block rounded-md px-3 py-2 text-sm font-semibold text-primary hover:bg-muted">Iscrivi la tua impresa</Link></li>
               </ul>
             )}
           </li>
@@ -170,17 +152,8 @@ export function Navbar() {
             >
               Tutte le imprese
             </a>
-            {aziende.map((a) => (
-                <Link
-                  key={a.id}
-                  to="/aziende/$slug"
-                  params={{ slug: a.slug }}
-                  onClick={() => setOpen(false)}
-                  className="block rounded-md px-3 py-2.5 text-sm font-medium text-brown hover:bg-muted"
-                >
-                  {a.nome}
-                </Link>
-            ))}
+            <a href="/#aderire" onClick={() => setOpen(false)} className="block rounded-md px-3 py-2.5 text-sm text-brown hover:bg-muted">Come aderire</a>
+            <Link to="/iscrizione-impresa" onClick={() => setOpen(false)} className="block rounded-md px-3 py-2.5 text-sm font-semibold text-primary hover:bg-muted">Iscrivi la tua impresa</Link>
             </div>}
           </li>
         </ul>

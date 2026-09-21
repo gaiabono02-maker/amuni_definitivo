@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as IscrizioneImpresaRouteImport } from './routes/iscrizione-impresa'
 import { Route as ProfiloRouteImport } from './routes/profilo'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
@@ -21,6 +22,11 @@ import { Route as AziendeSlugAdminRouteImport } from './routes/aziende.$slug.adm
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IscrizioneImpresaRoute = IscrizioneImpresaRouteImport.update({
+  id: '/iscrizione-impresa',
+  path: '/iscrizione-impresa',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProfiloRoute = ProfiloRouteImport.update({
@@ -61,6 +67,7 @@ const AziendeSlugAdminRoute = AziendeSlugAdminRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/iscrizione-impresa': typeof IscrizioneImpresaRoute
   '/profilo': typeof ProfiloRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/login': typeof AdminLoginRoute
@@ -71,6 +78,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/iscrizione-impresa': typeof IscrizioneImpresaRoute
   '/profilo': typeof ProfiloRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/login': typeof AdminLoginRoute
@@ -82,6 +90,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/iscrizione-impresa': typeof IscrizioneImpresaRoute
   '/profilo': typeof ProfiloRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/login': typeof AdminLoginRoute
@@ -94,6 +103,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/iscrizione-impresa'
     | '/profilo'
     | '/sitemap.xml'
     | '/admin/login'
@@ -104,6 +114,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/iscrizione-impresa'
     | '/profilo'
     | '/sitemap.xml'
     | '/admin/login'
@@ -114,6 +125,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/iscrizione-impresa'
     | '/profilo'
     | '/sitemap.xml'
     | '/admin/login'
@@ -125,6 +137,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  IscrizioneImpresaRoute: typeof IscrizioneImpresaRoute
   ProfiloRoute: typeof ProfiloRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   AdminLoginRoute: typeof AdminLoginRoute
@@ -140,6 +153,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/iscrizione-impresa': {
+      id: '/iscrizione-impresa'
+      path: '/iscrizione-impresa'
+      fullPath: '/iscrizione-impresa'
+      preLoaderRoute: typeof IscrizioneImpresaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/profilo': {
@@ -208,6 +228,7 @@ const AziendeSlugRouteWithChildren = AziendeSlugRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  IscrizioneImpresaRoute: IscrizioneImpresaRoute,
   ProfiloRoute: ProfiloRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   AdminLoginRoute: AdminLoginRoute,

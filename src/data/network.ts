@@ -9,15 +9,6 @@ export type Impresa = {
   certs: CertKey[];
 };
 
-export const imprese: Impresa[] = [
-  { nome: "Cantine del Belice", settore: "Viticoltura", prodotto: "Nero d'Avola DOC", provincia: "Agrigento", desc: "Produzione di vini autoctoni siciliani con metodi sostenibili e tradizionali.", certs: ["dop", "filiera", "famiglia"] },
-  { nome: "Frantoi Russo", settore: "Olivicoltura", prodotto: "Olio EVO Nocellara", provincia: "Palermo", desc: "Olio extravergine d'oliva di alta qualità da cultivar tipiche del territorio.", certs: ["dop", "sostenibile", "filiera"] },
-  { nome: "Agrumeto di Lorenzo", settore: "Agrumicoltura", prodotto: "Arance e Limoni di Sicilia", provincia: "Agrigento", desc: "Coltivazione di arance e limoni di Sicilia, certificati e a filiera corta.", certs: ["bio", "filiera", "igp"] },
-  { nome: "Antichi Grani", settore: "Cerealicoltura", prodotto: "Farine di grani antichi", provincia: "Palermo", desc: "Grani antichi siciliani e trasformazione in farine e prodotti da forno.", certs: ["bio", "famiglia", "sostenibile"] },
-  { nome: "Campagna Viva", settore: "Frutta secca", prodotto: "Mandorle di Avola", provincia: "Agrigento", desc: "Mandorle e pistacchi locali, lavorati e confezionati artigianalmente.", certs: ["famiglia", "filiera"] },
-  { nome: "Orto Mediterraneo", settore: "Ortofrutta", prodotto: "Ortaggi di stagione", provincia: "Palermo", desc: "Ortaggi e frutta di stagione coltivati nel rispetto della terra siciliana.", certs: ["bio", "sostenibile"] },
-];
-
 export const certLabels: Record<CertKey, string> = {
   bio: "Biologico",
   dop: "DOP",

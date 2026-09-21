@@ -1,15 +1,16 @@
 import { useState } from "react";
 import { ArrowRight, MapPin, X } from "lucide-react";
-import { imprese, province, siciliaPath } from "@/data/network";
+import { province, siciliaPath } from "@/data/network";
 
-export function SicilyMap() {
+import type { DbAzienda } from "@/lib/catalog";
+
+export function SicilyMap({ imprese }: { imprese: DbAzienda[] }) {
   const [selected, setSelected] = useState<string | null>(null);
   const [hovered, setHovered] = useState<string | null>(null);
 
   const aziendeIn = (nome: string) =>
     imprese.filter((a) => a.provincia === nome);
 
-  const selectedInfo = province.find((p) => p.nome === selected);
   const selectedAziende = selected ? aziendeIn(selected) : [];
 
   return (
@@ -78,7 +79,7 @@ export function SicilyMap() {
         {!selected ? (
           <div className="flex h-full min-h-[200px] flex-col items-center justify-center text-center text-muted-foreground">
             <MapPin className="h-8 w-8 text-primary" />
-            <p className="mt-3 text-sm">Clicca su una provincia in <span className="font-semibold text-foreground">terracotta</span> per scoprire le aziende del network di quella zona.</p>
+            <p className="mt-3 text-sm">{imprese.length === 0 ? "La rete cresce con le nuove adesioni. Iscrivi la tua impresa per rappresentare il tuo territorio." : <>Clicca su una provincia in <span className="font-semibold text-foreground">terracotta</span> per scoprire le aziende del network di quella zona.</>}</p>
           </div>
         ) : (
           <div>
@@ -95,7 +96,7 @@ export function SicilyMap() {
               {selectedAziende.map((a) => (
                 <div key={a.nome} className="rounded-xl border border-border bg-background p-4">
                   <h4 className="font-serif text-lg font-bold">{a.nome}</h4>
-                  <p className="text-sm font-medium text-secondary">{a.prodotto}</p>
+                  <p className="text-sm font-medium text-secondary">{a.comune}</p>
                   <p className="mt-1 text-xs text-muted-foreground">{a.settore}</p>
                   <a href="#imprese" className="mt-2 inline-flex items-center gap-1.5 text-sm font-semibold text-primary transition-all hover:gap-2.5">
                     Vedi scheda <ArrowRight className="h-4 w-4" />

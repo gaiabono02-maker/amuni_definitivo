@@ -1,5 +1,5 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { useState, useEffect, type FormEvent, type ReactNode } from "react";
+import { useState, useEffect } from "react";
 import {
   Leaf,
   Mail,
@@ -18,8 +18,6 @@ import {
 import { Navbar } from "@/components/Navbar";
 import { Reveal } from "@/components/Reveal";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import {
   CartProvider,
 } from "@/components/CartContext";
@@ -27,13 +25,10 @@ import { CartDrawer } from "@/components/CartDrawer";
 import { BlogSection } from "@/components/BlogSection";
 import { BottegaFeatures } from "@/components/BottegaFeatures";
 import { toast } from "sonner";
-import { iscrizioneSchema } from "@/lib/iscrizione.schema";
-import { submitApplication } from "@/lib/iscrizione.functions";
 import { AnimatedCounter } from "@/components/AnimatedCounter";
 import { SicilyMap } from "@/components/SicilyMap";
 import { SeasonalCalendar } from "@/components/SeasonalCalendar";
 import { Testimonials } from "@/components/Testimonials";
-import { imprese } from "@/data/network";
 import { fetchAziende, type DbAzienda } from "@/lib/catalog";
 import heroImg from "@/assets/hero-sicily.jpg";
 import territorioImg from "@/assets/territorio.jpg";
@@ -76,7 +71,7 @@ const prodotti = [
 ];
 
 const steps = [
-  { n: "1", title: "Compila il modulo", text: "Inserisci i dati della tua azienda agricola attraverso il form qui accanto." },
+  { n: "1", title: "Compila il modulo", text: "Inserisci i dati della tua azienda agricola nella pagina di iscrizione." },
   { n: "2", title: "Vieni contattato", text: "Il nostro team ti ricontatta per conoscere la tua realtà e le tue esigenze." },
   { n: "3", title: "Entra nel network", text: "Diventi parte attiva della rete A.M.U.N.Ì. e accedi a nuove opportunità." },
 ];
@@ -116,48 +111,12 @@ const pianiSostenitore: PianoSostenitore[] = [
 
 
 function Index() {
-  const [sent, setSent] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [aziende, setAziende] = useState<DbAzienda[]>([]);
 
   useEffect(() => {
     fetchAziende().then(setAziende).catch(() => setAziende([]));
   }, []);
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const form = e.currentTarget;
-    const fd = new FormData(form);
-    const parsed = iscrizioneSchema.safeParse({
-      nome: fd.get("nome"),
-      azienda: fd.get("azienda"),
-      settore: fd.get("settore") || undefined,
-      provincia: fd.get("provincia") || undefined,
-      email: fd.get("email"),
-      messaggio: fd.get("messaggio") || undefined,
-    });
-
-    if (!parsed.success) {
-      toast.error(parsed.error.issues[0].message);
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const { emailSent } = await submitApplication({ data: parsed.data });
-      setSent(true);
-      form.reset();
-      toast.success("Candidatura inviata con successo!");
-      if (!emailSent) {
-        toast.info("Candidatura ricevuta. La mail di conferma non è stata inviata, ma ti ricontatteremo a breve.");
-      }
-      setTimeout(() => setSent(false), 6000);
-    } catch {
-      toast.error("Si è verificato un errore. Riprova più tardi.");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <CartProvider>
@@ -211,7 +170,7 @@ function Index() {
       <section className="bg-brown py-6 text-cream">
         <div className="mx-auto grid max-w-5xl grid-cols-3 gap-4 px-5 text-center lg:px-8">
           {[
-            { n: 12, suffix: "", label: "imprese aderenti" },
+            { n: aziende.length, suffix: "", label: "imprese pubblicate" },
             { n: 80, suffix: "+", label: "prodotti disponibili" },
             { n: 6, suffix: "", label: "province coperte" },
           ].map((s) => (
@@ -333,7 +292,7 @@ function Index() {
             <div className="mx-auto mt-4 h-1 w-16 rounded-full bg-primary" />
           </div>
           <Reveal>
-            <SicilyMap />
+            <SicilyMap imprese={aziende} />
           </Reveal>
         </div>
       </section>
@@ -346,23 +305,13 @@ function Index() {
             <h2 className="mt-2 text-3xl font-bold sm:text-4xl">Le aziende che fanno rete</h2>
             <div className="mx-auto mt-4 h-1 w-16 rounded-full bg-primary" />
           </div>
+          <div className="mb-8 rounded-2xl border border-border bg-card p-8 text-center">
+            <h3 className="font-serif text-2xl font-bold">Coltiviamo insieme nuove opportunità</h3>
+            <p className="mx-auto my-4 max-w-2xl text-muted-foreground">La rete accoglie le imprese agricole siciliane che vogliono collaborare, valorizzare le proprie produzioni e raccontare il territorio. Le schede delle imprese saranno pubblicate dopo la conferma dell’adesione.</p>
+            <Button asChild><Link to="/iscrizione-impresa">Iscrivi la tua impresa <ArrowRight className="ml-2 h-4 w-4" /></Link></Button>
+          </div>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {(aziende.length > 0
-              ? aziende.map((a) => ({
-                  slug: a.slug,
-                  nome: a.nome,
-                  settore: a.settore,
-                  provincia: a.provincia,
-                  desc: a.descrizione,
-                }))
-              : imprese.map((a) => ({
-                  slug: undefined as string | undefined,
-                  nome: a.nome,
-                  settore: a.settore,
-                  provincia: a.provincia,
-                  desc: a.desc,
-                }))
-            ).map((a, i) => (
+            {aziende.map((a) => ({ ...a, desc: a.descrizione })).map((a, i) => (
               <Reveal key={a.slug ?? i} delay={(i % 3) * 120}>
                 <div className="flex h-full flex-col rounded-2xl border border-border bg-card p-7 shadow-sm transition-transform hover:-translate-y-1">
                   <div className="flex h-12 w-12 items-center justify-center rounded-full bg-secondary/15">
@@ -430,29 +379,11 @@ function Index() {
             </div>
 
             <Reveal delay={150}>
-              <form onSubmit={handleSubmit} className="space-y-4 rounded-2xl bg-cream p-7 text-foreground shadow-lg">
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <Field label="Nome" id="nome"><Input id="nome" name="nome" required placeholder="Nome e cognome" /></Field>
-                  <Field label="Azienda" id="azienda"><Input id="azienda" name="azienda" required placeholder="Nome azienda" /></Field>
-                </div>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <Field label="Settore agricolo" id="settore"><Input id="settore" name="settore" placeholder="Es. viticoltura" /></Field>
-                  <Field label="Provincia" id="provincia">
-                    <select id="provincia" name="provincia" className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" defaultValue="">
-                      <option value="" disabled>Seleziona</option>
-                      <option>Palermo</option>
-                      <option>Agrigento</option>
-                      <option>Altra</option>
-                    </select>
-                  </Field>
-                </div>
-                <Field label="Email" id="email"><Input id="email" name="email" type="email" required placeholder="latua@email.it" /></Field>
-                <Field label="Messaggio" id="messaggio"><Textarea id="messaggio" name="messaggio" rows={4} placeholder="Raccontaci della tua azienda..." /></Field>
-                <Button type="submit" size="lg" variant="secondary" className="w-full" disabled={loading}>
-                  {loading ? "Invio in corso..." : "Invia la candidatura"}
-                </Button>
-                {sent && <p className="text-sm font-medium text-secondary">Grazie! La tua candidatura è stata inviata. Ti contatteremo presto.</p>}
-              </form>
+              <div className="rounded-2xl bg-cream p-8 text-foreground shadow-lg">
+                <h3 className="font-serif text-2xl font-bold">La tua impresa nella rete A.M.U.N.Ì.</h3>
+                <p className="my-5 text-muted-foreground">Presentaci la tua attività. Compila il modulo di iscrizione: il nostro team ti contatterà per valutare insieme l’adesione.</p>
+                <Button asChild size="lg"><Link to="/iscrizione-impresa">Iscrivi la tua impresa <ArrowRight className="ml-2 h-4 w-4" /></Link></Button>
+              </div>
             </Reveal>
           </div>
         </div>
@@ -549,15 +480,6 @@ function Index() {
       </footer>
       </div>
     </CartProvider>
-  );
-}
-
-function Field({ label, id, children }: { label: string; id: string; children: ReactNode }) {
-  return (
-    <div>
-      <label htmlFor={id} className="mb-1.5 block text-sm font-medium">{label}</label>
-      {children}
-    </div>
   );
 }
 
