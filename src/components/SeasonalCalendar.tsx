@@ -10,9 +10,9 @@ export function SeasonalCalendar() {
     <section id="stagionalita" className="scroll-mt-16 bg-cream py-20 lg:py-28">
       <div className="mx-auto max-w-7xl px-5 lg:px-8">
         <div className="mb-12 text-center">
-          <p className="text-sm font-semibold uppercase tracking-widest text-primary">Calendario dei Sapori</p>
+          <p className="text-sm font-semibold uppercase tracking-widest brand-label">Calendario dei Sapori</p>
           <h2 className="mt-2 font-serif text-3xl font-bold sm:text-4xl">Mangia siciliano, mangia di stagione</h2>
-          <div className="mx-auto mt-4 h-1 w-16 rounded-full bg-primary" />
+          <div className="mx-auto mt-4 h-1 w-16 rounded-full bg-gold" />
           <p className="mx-auto mt-5 max-w-2xl text-muted-foreground">
             Ogni mese la terra siciliana offre i suoi frutti migliori. Scopri cosa raccolgono le aziende del network.
           </p>

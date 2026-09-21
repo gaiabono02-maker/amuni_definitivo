@@ -23,9 +23,9 @@ export function Testimonials() {
       onMouseLeave={() => (paused.current = false)}
     >
       <div className="mx-auto max-w-4xl px-5 text-center lg:px-8">
-        <p className="text-sm font-semibold uppercase tracking-widest text-primary">Testimonianze</p>
+        <p className="text-sm font-semibold uppercase tracking-widest brand-label">Testimonianze</p>
         <h2 className="mt-2 font-serif text-3xl font-bold sm:text-4xl">Lo dicono di noi</h2>
-        <div className="mx-auto mt-4 h-1 w-16 rounded-full bg-primary" />
+        <div className="mx-auto mt-4 h-1 w-16 rounded-full bg-gold" />
 
         <div className="relative mt-12 min-h-[260px]">
           <Quote className="mx-auto h-12 w-12 text-primary/30" />

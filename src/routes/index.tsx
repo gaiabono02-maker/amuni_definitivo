@@ -125,7 +125,7 @@ function Index() {
         <CartDrawer />
 
       {/* HERO */}
-      <section id="hero" className="relative flex min-h-screen items-center">
+      <section id="hero" className="relative flex min-h-screen items-center bg-depth">
         <img
           src={heroImg}
           alt="Campagna siciliana al tramonto con uliveti e campi di grano"
@@ -133,10 +133,10 @@ function Index() {
           height={1080}
           className="absolute inset-0 h-full w-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-brown/85 via-brown/55 to-brown/25" />
+        <div className="absolute inset-0 bg-gradient-to-r from-depth/95 via-depth/80 to-depth/50" />
         <div className="relative mx-auto w-full max-w-7xl px-5 lg:px-8">
           <div className="max-w-2xl py-32 text-cream">
-            <p className="mb-5 inline-block rounded-full border border-cream/40 px-4 py-1 text-xs font-semibold uppercase tracking-widest">
+            <p className="mb-5 inline-block rounded-full border border-gold/50 bg-depth/60 px-4 py-1 text-gold text-xs font-semibold uppercase tracking-widest">
               Agricoltura Made in Sicily
             </p>
             <h1 className="text-5xl font-bold leading-none sm:text-7xl">A.M.U.N.Ì.</h1>
@@ -167,7 +167,7 @@ function Index() {
       </section>
 
       {/* SOCIAL PROOF / CONTATORI */}
-      <section className="bg-brown py-6 text-cream">
+      <section className="bg-navy py-6 text-cream">
         <div className="mx-auto grid max-w-5xl grid-cols-3 gap-4 px-5 text-center lg:px-8">
           {[
             { n: aziende.length, suffix: "", label: "imprese pubblicate" },
@@ -189,9 +189,9 @@ function Index() {
         <div className="mx-auto max-w-7xl px-5 lg:px-8">
           <div className="grid items-center gap-12 lg:grid-cols-2">
             <Reveal>
-              <p className="text-sm font-semibold uppercase tracking-widest text-primary">Il Progetto</p>
+              <p className="text-sm font-semibold uppercase tracking-widest brand-label">Il Progetto</p>
               <h2 className="mt-2 text-3xl font-bold sm:text-4xl">Una rete per l'agricoltura siciliana</h2>
-              <div className="mt-4 h-1 w-16 rounded-full bg-primary" />
+              <div className="mt-4 h-1 w-16 rounded-full bg-gold" />
               <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
                 A.M.U.N.Ì. è un'iniziativa di networking dedicata alle piccole e medie imprese
                 agricole siciliane, attiva da <strong className="text-foreground">marzo a giugno 2026</strong>{" "}
@@ -241,10 +241,10 @@ function Index() {
           loading="lazy"
           className="absolute inset-0 h-full w-full object-cover"
         />
-        <div className="absolute inset-0 bg-brown/80" />
+        <div className="absolute inset-0 bg-depth/85" />
         <div className="relative mx-auto max-w-5xl px-5 text-center text-cream lg:px-8">
           <Reveal>
-            <p className="text-sm font-semibold uppercase tracking-widest text-cream/70">Il Territorio</p>
+            <p className="text-sm font-semibold uppercase tracking-widest text-gold">Il Territorio</p>
             <h2 className="mt-2 text-3xl font-bold sm:text-4xl">Palermo e Agrigento, cuore agricolo della Sicilia</h2>
             <p className="mx-auto mt-6 max-w-3xl text-lg leading-relaxed text-cream/85">
               Tra colline assolate e terre baciate dal mare, le province di Palermo e Agrigento
@@ -287,9 +287,9 @@ function Index() {
       <section className="scroll-mt-16 py-20 lg:py-28">
         <div className="mx-auto max-w-7xl px-5 lg:px-8">
           <div className="mb-12 text-center">
-            <p className="text-sm font-semibold uppercase tracking-widest text-primary">La Rete sul Territorio</p>
+            <p className="text-sm font-semibold uppercase tracking-widest brand-label">La Rete sul Territorio</p>
             <h2 className="mt-2 font-serif text-3xl font-bold sm:text-4xl">Esplora la mappa del network</h2>
-            <div className="mx-auto mt-4 h-1 w-16 rounded-full bg-primary" />
+            <div className="mx-auto mt-4 h-1 w-16 rounded-full bg-gold" />
           </div>
           <Reveal>
             <SicilyMap imprese={aziende} />
@@ -301,9 +301,9 @@ function Index() {
       <section id="imprese" className="scroll-mt-16 bg-muted/40 py-20 lg:py-28">
         <div className="mx-auto max-w-7xl px-5 lg:px-8">
           <div className="mb-12 text-center">
-            <p className="text-sm font-semibold uppercase tracking-widest text-primary">Le Imprese del Network</p>
+            <p className="text-sm font-semibold uppercase tracking-widest brand-label">Le Imprese del Network</p>
             <h2 className="mt-2 text-3xl font-bold sm:text-4xl">Le aziende che fanno rete</h2>
-            <div className="mx-auto mt-4 h-1 w-16 rounded-full bg-primary" />
+            <div className="mx-auto mt-4 h-1 w-16 rounded-full bg-gold" />
           </div>
           <div className="mb-8 rounded-2xl border border-border bg-card p-8 text-center">
             <h3 className="font-serif text-2xl font-bold">Coltiviamo insieme nuove opportunità</h3>
@@ -354,12 +354,12 @@ function Index() {
       <SostenitoriSection />
 
       {/* COME ADERIRE */}
-      <section id="aderire" className="scroll-mt-16 bg-primary py-20 text-primary-foreground lg:py-28">
+      <section id="aderire" className="scroll-mt-16 bg-depth py-20 text-cream lg:py-28">
         <div className="mx-auto max-w-7xl px-5 lg:px-8">
           <div className="mb-12 text-center">
-            <p className="text-sm font-semibold uppercase tracking-widest text-primary-foreground/80">Aderire</p>
+            <p className="text-sm font-semibold uppercase tracking-widest text-gold">Aderire</p>
             <h2 className="mt-2 text-3xl font-bold sm:text-4xl">Come entrare nel network</h2>
-            <div className="mx-auto mt-4 h-1 w-16 rounded-full bg-primary-foreground/60" />
+            <div className="mx-auto mt-4 h-1 w-16 rounded-full bg-gold" />
           </div>
           <div className="grid gap-12 lg:grid-cols-2">
             <div className="space-y-6">
@@ -393,9 +393,9 @@ function Index() {
       <section id="chi-siamo" className="scroll-mt-16 py-20 lg:py-28">
         <div className="mx-auto max-w-3xl px-5 lg:px-8 text-center">
           <Reveal>
-            <p className="text-sm font-semibold uppercase tracking-widest text-primary">Chi Siamo</p>
+            <p className="text-sm font-semibold uppercase tracking-widest brand-label">Chi Siamo</p>
             <h2 className="mt-2 text-3xl font-bold sm:text-4xl">Associazione Forma Mentis OdV</h2>
-            <div className="mx-auto mt-4 h-1 w-16 rounded-full bg-primary" />
+            <div className="mx-auto mt-4 h-1 w-16 rounded-full bg-gold" />
             <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
               Con sede a <strong className="text-foreground">Favara (AG)</strong>, Associazione
               Forma Mentis OdV è iscritta al <strong className="text-foreground">R.U.N.T.S.</strong>{" "}
@@ -415,9 +415,9 @@ function Index() {
       <section id="contatti" className="scroll-mt-16 bg-muted/40 py-20 lg:py-28">
         <div className="mx-auto max-w-5xl px-5 lg:px-8">
           <div className="mb-12 text-center">
-            <p className="text-sm font-semibold uppercase tracking-widest text-primary">Contatti</p>
+            <p className="text-sm font-semibold uppercase tracking-widest brand-label">Contatti</p>
             <h2 className="mt-2 text-3xl font-bold sm:text-4xl">Scrivici o vieni a trovarci</h2>
-            <div className="mx-auto mt-4 h-1 w-16 rounded-full bg-primary" />
+            <div className="mx-auto mt-4 h-1 w-16 rounded-full bg-gold" />
           </div>
           <div className="grid gap-6 sm:grid-cols-3">
             <a href="mailto:formamentisonlus@gmail.com" className="flex flex-col items-center gap-3 rounded-2xl border border-border bg-card p-8 text-center shadow-sm transition-transform hover:-translate-y-1">
@@ -437,12 +437,12 @@ function Index() {
       </section>
 
       {/* FOOTER */}
-      <footer className="bg-brown text-cream/80">
+      <footer className="bg-depth text-cream/80">
         <div className="mx-auto max-w-7xl px-5 py-14 lg:px-8">
           <div className="flex flex-col gap-10 md:flex-row md:items-start md:justify-between">
             <div className="max-w-sm">
               <div className="flex items-center gap-2.5">
-                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                <span className="flex h-10 w-10 items-center justify-center rounded-full border border-gold/60 bg-navy text-gold">
                   <Leaf className="h-5 w-5" />
                 </span>
                 <span className="font-serif text-xl font-bold text-cream">A.M.U.N.Ì.</span>
@@ -488,13 +488,13 @@ function SostenitoriSection() {
     <section id="sostenitori" className="scroll-mt-16 py-20 lg:py-28">
       <div className="mx-auto max-w-7xl px-5 lg:px-8">
         <div className="mb-12 text-center">
-          <p className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-primary">
+          <p className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-widest brand-label">
             <Heart className="h-4 w-4" /> Diventa Sostenitore
           </p>
           <h2 className="mt-2 font-serif text-3xl font-bold sm:text-4xl">
             Sostieni l'agricoltura siciliana
           </h2>
-          <div className="mx-auto mt-4 h-1 w-16 rounded-full bg-primary" />
+          <div className="mx-auto mt-4 h-1 w-16 rounded-full bg-gold" />
           <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground">
             Scegli il piano che fa per te e contribuisci alla crescita della rete di imprese
             agricole del territorio. Ogni contributo aiuta i nostri produttori.
@@ -507,7 +507,7 @@ function SostenitoriSection() {
               <div
                 className={`relative flex h-full flex-col rounded-2xl border p-8 shadow-sm transition-transform hover:-translate-y-1 ${
                   p.evidenza
-                    ? "border-primary bg-primary text-primary-foreground shadow-lg"
+                    ? "border-gold/50 bg-navy text-cream shadow-lg"
                     : "border-border bg-card"
                 }`}
               >
@@ -530,7 +530,7 @@ function SostenitoriSection() {
                 </ul>
                 <Button
                   size="lg"
-                  variant={p.evidenza ? "secondary" : "default"}
+                  variant="default"
                   className="mt-8 w-full"
                   onClick={() =>
                     toast.info("I pagamenti saranno presto disponibili. Grazie per il tuo interesse!")

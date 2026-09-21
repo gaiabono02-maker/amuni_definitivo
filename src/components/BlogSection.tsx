@@ -25,7 +25,7 @@ export function BlogSection() {
   return <section id="blog" className="scroll-mt-16 bg-muted/40 py-20 lg:py-28">
     <div className="mx-auto max-w-7xl px-5 lg:px-8">
       <header className="mb-10 text-center">
-        <p className="text-sm font-semibold uppercase tracking-widest text-primary">Il Blog</p>
+        <p className="text-sm font-semibold uppercase tracking-widest brand-label">Il Blog</p>
         <h2 className="mt-2 font-serif text-3xl sm:text-4xl">Dalla terra alla tavola</h2>
         <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">Ogni prodotto ha una storia. Scopri le produzioni e le imprese che le raccontano.</p>
         <p className="mt-3 text-xs uppercase tracking-wider text-muted-foreground">Anteprima della piattaforma · Contenuti dimostrativi</p>
@@ -42,7 +42,7 @@ export function BlogSection() {
             <button onClick={() => setSelected(p)} className="block w-full overflow-hidden rounded-2xl bg-cream" aria-label={`Leggi la storia di ${p.nome}`}>
               {p.immagine_url ? <img src={p.immagine_url} alt={p.nome} loading="lazy" className="aspect-[4/3] w-full object-cover motion-safe:transition-transform motion-safe:duration-700 motion-safe:group-hover:scale-[1.025]" /> : <div className="flex aspect-[4/3] items-center justify-center"><Leaf className="text-primary" /></div>}
             </button>
-            <p className="mt-5 text-xs uppercase tracking-widest text-primary">{p.categoria}</p>
+            <p className="mt-5 text-xs uppercase tracking-widest brand-label">{p.categoria}</p>
             <h3 className="mt-2 font-serif text-2xl"><button className="text-left hover:text-primary" onClick={() => setSelected(p)}>{p.nome}</button></h3>
             {azienda ? <Link to="/aziende/$slug" params={{slug:azienda.slug}} className="mt-2 block font-medium text-secondary hover:underline">di {p.azienda}</Link> : <p className="mt-2 font-medium text-secondary">di {p.azienda}</p>}
             {p.provincia && <p className="mt-2 flex items-center gap-1 text-xs text-muted-foreground"><MapPin className="h-3 w-3" />{p.provincia}</p>}
@@ -56,7 +56,7 @@ export function BlogSection() {
       <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-2xl">
         {selected && <>
           <DialogHeader>
-            <p className="text-xs uppercase tracking-widest text-primary">{selected.categoria} · Contenuti dimostrativi</p>
+            <p className="text-xs uppercase tracking-widest brand-label">{selected.categoria} · Contenuti dimostrativi</p>
             <DialogTitle className="font-serif text-3xl">{selected.nome}</DialogTitle>
             <DialogDescription>di {selected.azienda}{selected.provincia ? ` · ${selected.provincia}` : ""}</DialogDescription>
           </DialogHeader>

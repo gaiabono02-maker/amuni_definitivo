@@ -5,10 +5,11 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/*
- * Design system definition.
- *
- * The @theme inline block maps CSS custom properties to Tailwind utility
+/* Brand colors are kept in HEX to match the supplied palette exactly.
+ * Semantic tokens separate blue navigation accents from action buttons.
+ */
+
+@theme inline block maps CSS custom properties to Tailwind utility
  * classes (e.g. --color-primary -> bg-primary, text-primary).
  *
  * The :root and .dark blocks define the actual color values using oklch.
@@ -62,6 +63,12 @@
   --color-sidebar-ring: var(--sidebar-ring);
   --font-serif: "Playfair Display", Georgia, serif;
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --color-depth: var(--depth);
+  --color-navy: var(--navy);
+  --color-stroke: var(--stroke);
+  --color-gold: var(--gold);
+  --color-passion: var(--passion);
+  --color-passion-foreground: var(--passion-foreground);
   --color-terracotta: var(--terracotta);
   --color-olive: var(--olive);
   --color-cream: var(--cream);
@@ -70,79 +77,82 @@
 
 :root {
   --radius: 0.5rem;
-  /* Brand palette */
-  --terracotta: oklch(0.58 0.13 45);   /* #C0622B */
-  --olive: oklch(0.55 0.09 120);        /* #6B7C3A */
-  --cream: oklch(0.97 0.012 85);        /* #FAF6EE */
-  --brown: oklch(0.27 0.045 55);        /* #2C1A0E */
+  --depth: #0F1A30;
+  --navy: #1A2744;
+  --stroke: #4A7AB5;
+  --gold: #D4961A;
+  --passion: #C03A2B;
+  --passion-foreground: #FFFFFF;
+
+  /* Compatibility aliases for the existing components. */
+  --terracotta: var(--stroke);
+  --olive: var(--navy);
+  --cream: #F5F7FB;
+  --brown: var(--navy);
 
   --background: var(--cream);
-  --foreground: var(--brown);
-  --card: oklch(1 0 0);
-  --card-foreground: var(--brown);
-  --popover: oklch(1 0 0);
-  --popover-foreground: var(--brown);
-  --primary: var(--terracotta);
-  --primary-foreground: oklch(0.98 0.01 85);
-  --secondary: var(--olive);
-  --secondary-foreground: oklch(0.98 0.01 85);
-  --muted: oklch(0.93 0.015 80);
-  --muted-foreground: oklch(0.45 0.04 55);
-  --accent: var(--olive);
-  --accent-foreground: oklch(0.98 0.01 85);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.984 0.003 247.858);
-  --border: oklch(0.88 0.018 75);
-  --input: oklch(0.88 0.018 75);
-  --ring: var(--terracotta);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: var(--cream);
-  --sidebar-foreground: var(--brown);
-  --sidebar-primary: var(--terracotta);
-  --sidebar-primary-foreground: oklch(0.98 0.01 85);
-  --sidebar-accent: oklch(0.93 0.015 80);
-  --sidebar-accent-foreground: var(--brown);
-  --sidebar-border: oklch(0.88 0.018 75);
-  --sidebar-ring: var(--terracotta);
+  --foreground: var(--navy);
+  --card: #FFFFFF;
+  --card-foreground: var(--navy);
+  --popover: #FFFFFF;
+  --popover-foreground: var(--navy);
+  /* Slightly deeper blue for readable small text and selected controls. */
+  --primary: #416DA3;
+  --primary-foreground: #FFFFFF;
+  --secondary: var(--navy);
+  --secondary-foreground: #FFFFFF;
+  --muted: #E8EDF5;
+  --muted-foreground: #526079;
+  --accent: #E8EDF5;
+  --accent-foreground: var(--navy);
+  --destructive: #B42332;
+  --destructive-foreground: #FFFFFF;
+  --border: #CFD8E6;
+  --input: #B4C1D4;
+  --ring: var(--stroke);
+  --chart-1: var(--stroke);
+  --chart-2: var(--gold);
+  --chart-3: var(--navy);
+  --chart-4: var(--passion);
+  --chart-5: #829EC4;
+  --sidebar: var(--navy);
+  --sidebar-foreground: var(--cream);
+  --sidebar-primary: var(--stroke);
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: var(--depth);
+  --sidebar-accent-foreground: var(--cream);
+  --sidebar-border: #344564;
+  --sidebar-ring: var(--gold);
 }
 
 .dark {
-  --background: oklch(0.129 0.042 264.695);
-  --foreground: oklch(0.984 0.003 247.858);
-  --card: oklch(0.208 0.042 265.755);
-  --card-foreground: oklch(0.984 0.003 247.858);
-  --popover: oklch(0.208 0.042 265.755);
-  --popover-foreground: oklch(0.984 0.003 247.858);
-  --primary: oklch(0.929 0.013 255.508);
-  --primary-foreground: oklch(0.208 0.042 265.755);
-  --secondary: oklch(0.279 0.041 260.031);
-  --secondary-foreground: oklch(0.984 0.003 247.858);
-  --muted: oklch(0.279 0.041 260.031);
-  --muted-foreground: oklch(0.704 0.04 256.788);
-  --accent: oklch(0.279 0.041 260.031);
-  --accent-foreground: oklch(0.984 0.003 247.858);
-  --destructive: oklch(0.704 0.191 22.216);
-  --destructive-foreground: oklch(0.984 0.003 247.858);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.551 0.027 264.364);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.208 0.042 265.755);
-  --sidebar-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.279 0.041 260.031);
-  --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.551 0.027 264.364);
+  --background: var(--depth);
+  --foreground: var(--cream);
+  --card: var(--navy);
+  --card-foreground: var(--cream);
+  --popover: var(--navy);
+  --popover-foreground: var(--cream);
+  --secondary: var(--stroke);
+  --secondary-foreground: #FFFFFF;
+  --muted: #243451;
+  --muted-foreground: #B4C1D4;
+  --accent: #243451;
+  --accent-foreground: var(--cream);
+  --border: #344564;
+  --input: #526079;
+}
+
+/* Gold is paired with navy so small labels stay readable. */
+@layer utilities {
+  .brand-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: 9999px;
+    padding: 0.35rem 0.85rem;
+    background-color: var(--navy);
+    color: var(--gold);
+  }
 }
 
 @layer base {

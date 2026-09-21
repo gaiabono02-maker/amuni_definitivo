@@ -13,15 +13,15 @@ export const Route = createFileRoute("/iscrizione-impresa")({
 function IscrizioneImpresa() {
   return (
     <div className="min-h-screen bg-cream text-brown">
-      <header className="border-b border-border">
+      <header className="border-b border-stroke/30 bg-navy text-cream">
         <nav aria-label="Navigazione" className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-5">
-          <Link to="/" className="flex items-center gap-2 font-serif text-xl font-bold"><Leaf className="h-6 w-6 text-primary" /> A.M.U.N.Ì.</Link>
-          <a href="/#imprese" className="flex items-center gap-2 text-sm hover:text-primary"><ArrowLeft className="h-4 w-4" /> Le Imprese</a>
+          <Link to="/" className="flex items-center gap-2 font-serif text-xl font-bold"><Leaf className="h-6 w-6 text-gold" /> A.M.U.N.Ì.</Link>
+          <a href="/#imprese" className="flex items-center gap-2 text-sm hover:text-gold"><ArrowLeft className="h-4 w-4" /> Le Imprese</a>
         </nav>
       </header>
       <main className="mx-auto grid max-w-6xl items-start gap-10 px-5 py-12 lg:grid-cols-2 lg:gap-16 lg:py-20">
         <div>
-          <p className="text-sm font-semibold uppercase tracking-widest text-primary">Entra nella rete</p>
+          <p className="text-sm font-semibold uppercase tracking-widest brand-label">Entra nella rete</p>
           <h1 className="mt-3 font-serif text-4xl font-bold sm:text-5xl">La tua impresa, una rete di opportunità.</h1>
           <p className="mt-6 text-lg leading-relaxed text-muted-foreground">Coltivi, produci o trasformi in Sicilia? Presentaci la tua attività e scopri come crescere insieme alle altre imprese agricole del territorio.</p>
           <ul className="my-8 space-y-4">

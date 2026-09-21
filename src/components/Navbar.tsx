@@ -40,18 +40,16 @@ export function Navbar() {
   return (
     <header
       className={`fixed inset-x-0 top-0 z-50 transition-colors duration-300 ${
-        scrolled || open ? "bg-cream/95 shadow-sm backdrop-blur" : "bg-transparent"
+        scrolled || open ? "bg-navy/95 shadow-sm backdrop-blur" : "bg-depth/40 backdrop-blur-sm"
       }`}
     >
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-5 py-3 lg:px-8">
         <a href="/#hero" className="flex items-center gap-2.5">
-          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground">
+          <span className="flex h-10 w-10 items-center justify-center rounded-full border border-gold/60 bg-depth text-gold">
             <Leaf className="h-5 w-5" />
           </span>
           <span
-            className={`font-serif text-xl font-bold leading-none transition-colors ${
-              scrolled || open ? "text-brown" : "text-cream"
-            }`}
+            className="font-serif text-xl font-bold leading-none text-cream transition-colors"
           >
             A.M.U.N.Ì.
           </span>
@@ -62,9 +60,7 @@ export function Navbar() {
             <li key={l.href}>
               <a
                 href={l.href}
-                className={`text-sm font-medium transition-colors hover:text-primary ${
-                  scrolled ? "text-brown" : "text-cream"
-                }`}
+                className="text-sm font-medium text-cream transition-colors hover:text-gold"
               >
                 {l.label}
               </a>
@@ -76,9 +72,7 @@ export function Navbar() {
               aria-controls="imprese-desktop"
               onKeyDown={(e) => { if (e.key === "Escape") setAzOpen(false); }}
               onClick={() => setAzOpen((o) => !o)}
-              className={`inline-flex items-center gap-1 text-sm font-medium transition-colors hover:text-primary ${
-                scrolled ? "text-brown" : "text-cream"
-              }`}
+              className="inline-flex items-center gap-1 text-sm font-medium text-cream transition-colors hover:text-gold"
             >
               Le Imprese
               <ChevronDown className={`h-4 w-4 transition-transform ${azOpen ? "rotate-180" : ""}`} />
@@ -105,9 +99,7 @@ export function Navbar() {
           <button
             aria-label="Apri carrello"
             onClick={openCart}
-            className={`relative transition-colors hover:text-primary ${
-              scrolled || open ? "text-brown" : "text-cream"
-            }`}
+            className="relative text-cream transition-colors hover:text-gold"
           >
             <ShoppingCart className="h-6 w-6" />
             {count > 0 && (
@@ -120,7 +112,7 @@ export function Navbar() {
             aria-label={open ? "Chiudi menu" : "Apri menu"}
             aria-expanded={open}
             onClick={() => setOpen((o) => !o)}
-            className={`lg:hidden ${scrolled || open ? "text-brown" : "text-cream"}`}
+            className="text-cream lg:hidden"
           >
             {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>

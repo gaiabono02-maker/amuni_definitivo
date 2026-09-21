@@ -61,7 +61,7 @@ export function CompanyApplicationForm() {
                 </div>
                 <Field label="Email" id="email"><Input id="email" name="email" type="email" required placeholder="latua@email.it" /></Field>
                 <Field label="Messaggio" id="messaggio"><Textarea id="messaggio" name="messaggio" rows={4} placeholder="Raccontaci della tua azienda..." /></Field>
-                <Button type="submit" size="lg" variant="secondary" className="w-full" disabled={loading || sent}>
+                <Button type="submit" size="lg" className="w-full" disabled={loading || sent}>
                   {loading ? "Invio in corso..." : sent ? "Candidatura ricevuta" : "Invia la candidatura"}
                 </Button>
                 {sent && <p role="status" className="text-sm font-medium text-secondary">Grazie! La tua candidatura è stata inviata. Ti contatteremo presto.</p>}

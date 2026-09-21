@@ -265,7 +265,7 @@ function DettaglioProdotto({ prodotto, azienda, onClose, onInteresse }: {
       <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-2xl">
         {prodotto && <>
           <DialogHeader>
-            <p className="text-xs uppercase tracking-widest text-primary">{prodotto.categoria} · Contenuti dimostrativi</p>
+            <p className="text-xs uppercase tracking-widest brand-label">{prodotto.categoria} · Contenuti dimostrativi</p>
             <DialogTitle className="font-serif text-3xl">{prodotto.nome}</DialogTitle>
             <DialogDescription>Scopri il prodotto e conosci l’impresa che lo realizza.</DialogDescription>
           </DialogHeader>
@@ -435,7 +435,7 @@ export function BottegaFeatures() {
     <section id="bottega" className="scroll-mt-16 bg-cream/40 py-20 lg:py-28">
       <div className="mx-auto max-w-7xl px-5 lg:px-8">
         <div className="mb-14 text-center">
-          <p className="text-sm font-semibold uppercase tracking-widest text-primary">
+          <p className="text-sm font-semibold uppercase tracking-widest brand-label">
             La Bottega
           </p>
           <h2 className="mt-2 font-serif text-3xl font-bold sm:text-4xl">

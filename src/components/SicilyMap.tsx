@@ -17,7 +17,7 @@ export function SicilyMap({ imprese }: { imprese: DbAzienda[] }) {
     <div className="grid items-start gap-8 lg:grid-cols-[1.3fr_1fr]">
       <div className="relative rounded-2xl border border-border bg-card p-4 shadow-sm">
         <svg viewBox="0 0 800 520" className="h-auto w-full" role="img" aria-label="Mappa interattiva della Sicilia">
-          <path d={siciliaPath} fill="oklch(0.93 0.015 80)" stroke="oklch(0.55 0.09 120 / 0.4)" strokeWidth={2} />
+          <path d={siciliaPath} fill="var(--muted)" stroke="var(--stroke)" strokeWidth={2} />
           {province.map((p) => {
             const aziende = aziendeIn(p.nome);
             const active = aziende.length > 0;
@@ -36,7 +36,7 @@ export function SicilyMap({ imprese }: { imprese: DbAzienda[] }) {
                   cx={p.x}
                   cy={p.y}
                   r={isSel ? r + 5 : r}
-                  fill={active ? "var(--terracotta)" : "oklch(0.75 0.01 80)"}
+                  fill={active ? "var(--stroke)" : "var(--border)"}
                   stroke="var(--cream)"
                   strokeWidth={3}
                   className="transition-all"
@@ -79,7 +79,7 @@ export function SicilyMap({ imprese }: { imprese: DbAzienda[] }) {
         {!selected ? (
           <div className="flex h-full min-h-[200px] flex-col items-center justify-center text-center text-muted-foreground">
             <MapPin className="h-8 w-8 text-primary" />
-            <p className="mt-3 text-sm">{imprese.length === 0 ? "La rete cresce con le nuove adesioni. Iscrivi la tua impresa per rappresentare il tuo territorio." : <>Clicca su una provincia in <span className="font-semibold text-foreground">terracotta</span> per scoprire le aziende del network di quella zona.</>}</p>
+            <p className="mt-3 text-sm">{imprese.length === 0 ? "La rete cresce con le nuove adesioni. Iscrivi la tua impresa per rappresentare il tuo territorio." : <>Clicca su una provincia in <span className="font-semibold text-foreground">blu</span> per scoprire le aziende del network di quella zona.</>}</p>
           </div>
         ) : (
           <div>
