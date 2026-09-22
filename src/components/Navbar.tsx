@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Menu, X, Leaf, ShoppingCart, ChevronDown } from "lucide-react";
+import { Menu, X, Leaf, ShoppingCart, ChevronDown, ShieldCheck } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useCart } from "@/components/CartContext";
 
@@ -55,7 +55,7 @@ export function Navbar() {
           </span>
         </a>
 
-        <ul className="hidden items-center gap-5 lg:flex">
+        <ul className="hidden items-center gap-3 xl:flex">
           {links.map((l) => (
             <li key={l.href}>
               <a
@@ -95,7 +95,10 @@ export function Navbar() {
           </li>
         </ul>
 
-        <div className="flex items-center gap-3">
+        <div className="flex shrink-0 items-center gap-3">
+          <Link to="/admin" className="hidden items-center gap-2 whitespace-nowrap rounded-md border border-gold/60 bg-navy px-3 py-2 text-sm font-semibold text-gold transition-colors hover:bg-depth focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold xl:inline-flex">
+            <ShieldCheck className="h-4 w-4" /> Area amministratore
+          </Link>
           <button
             aria-label="Apri carrello"
             onClick={openCart}
@@ -112,7 +115,7 @@ export function Navbar() {
             aria-label={open ? "Chiudi menu" : "Apri menu"}
             aria-expanded={open}
             onClick={() => setOpen((o) => !o)}
-            className="text-cream lg:hidden"
+            className="text-cream xl:hidden"
           >
             {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
@@ -120,7 +123,13 @@ export function Navbar() {
       </nav>
 
       {open && (
-        <ul className="max-h-[calc(100dvh-64px)] overflow-y-auto flex flex-col gap-1 border-t border-border bg-cream px-5 pb-4 pt-2 lg:hidden">
+        <ul className="max-h-[calc(100dvh-64px)] overflow-y-auto flex flex-col gap-1 border-t border-border bg-cream px-5 pb-4 pt-2 xl:hidden">
+          <li className="mb-2 border-b border-border pb-3 pt-1">
+            <Link to="/admin" onClick={() => setOpen(false)} className="flex items-start gap-3 rounded-xl bg-navy px-4 py-3 text-cream">
+              <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-gold" />
+              <span><span className="block text-sm font-semibold text-gold">Area amministratore</span><span className="mt-1 block text-xs text-cream/80">Accedi al pannello clienti e aziende</span></span>
+            </Link>
+          </li>
           {links.map((l) => (
             <li key={l.href}>
               <a
