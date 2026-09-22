@@ -1,3 +1,5 @@
+import { registerCustomer } from "@/lib/customer-registration.functions";
+import { customerRegistrationSchema } from "@/lib/customer-registration.schema";
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import {
@@ -179,17 +181,25 @@ function ProfiloPage() {
         setStato("loading");
         await carica();
       } else {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            data: { nome },
-            emailRedirectTo: window.location.origin + "/profilo",
-          },
-        });
-        if (error) throw error;
-        toast.success("Account creato! Ora puoi accedere.");
+        const parsed = customerRegistrationSchema.safeParse({email, password, nome});
+        if (!parsed.success) throw new Error(parsed.error.issues[0].message);
+        const result = await registerCustomer({data: parsed.data});
+        setPassword("");
         setMode("login");
+        if (result.session) {
+          const {error: sessionError} = await supabase.auth.setSession(result.session);
+          if (sessionError) {
+            toast.success("Iscrizione ricevuta. Ora puoi accedere con la tua email e password.");
+          } else {
+            toast.success("Grazie per esserti iscritto ad A.M.U.N.Ì.!");
+            await carica();
+          }
+        } else {
+          toast.success("Richiesta ricevuta. Controlla la tua email per confermare l’account; se sei già iscritto, puoi accedere.");
+        }
+        if (result.emailSent === false) {
+          toast.info("La tua iscrizione è stata salvata, ma non siamo riusciti a inviare la mail di benvenuto. Non occorre ripetere l’iscrizione.");
+        }
       }
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Errore. Riprova.");

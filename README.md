@@ -47,17 +47,22 @@ L’endpoint `/api/notify-stato` rimane quello originale: risponde correttamente
 
 Configurazione di hosting: https://vercel.com/docs/frameworks/full-stack/tanstack-start
 
-## Conferma candidatura via email
+## Email automatiche di iscrizione
 
-Il modulo «Invia la candidatura» salva l'iscrizione dal server e poi invia una
-conferma personalizzata con una breve presentazione di A.M.U.N.Ì.
-Configurare in locale e su Vercel le variabili server `AMUNI_SMTP_HOST`,
-`AMUNI_SMTP_PORT` (465 per TLS diretto, 587 per STARTTLS), `AMUNI_SMTP_USER`,
-`AMUNI_SMTP_PASSWORD` e `AMUNI_NOREPLY_EMAIL`. Il mittente no-reply deve essere
-autorizzato dal provider SMTP. Non usare il prefisso `VITE_` per queste variabili.
-Se l'email non parte, la candidatura resta salvata e il modulo avvisa l'utente.
-La consegna reale richiede credenziali SMTP configurate e una prova su una
-casella di test dopo il deploy.
+Clienti e aziende ricevono una risposta di ringraziamento con la conferma di ricezione e il messaggio «Ti terremo aggiornato sulle novità del progetto e sui prossimi passi della tua iscrizione». Per le aziende il testo spiega anche la valutazione della candidatura.
+
+Le nuove registrazioni clienti passano da `registerCustomer`, che crea l’account con Supabase e invia il benvenuto solo per un account appena creato. Gestisce sia le sessioni immediate sia gli account che devono confermare l’indirizzo. Le candidature usano `submitApplication`, che salva prima di tentare l’invio.
+
+**Attivazione del servizio email:** configurare le credenziali su Vercel in Production e ripubblicare. Il codice da solo non abilita le spedizioni.
+
+- SMTP: `AMUNI_SMTP_HOST`, `AMUNI_SMTP_PORT` (465 oppure 587), `AMUNI_SMTP_USER`, `AMUNI_SMTP_PASSWORD`, `AMUNI_NOREPLY_EMAIL` (mittente autorizzato).
+- In alternativa, per la casella `formamentisonlus@gmail.com`: impostare soltanto `AMUNI_GMAIL_APP_PASSWORD` con una password per app Google e lasciare vuoti host, utente, password e mittente SMTP. Non usare la password normale dell’account.
+
+Le risposte vengono recapitate a `formamentisonlus@gmail.com`. Tutte le credenziali sono server-only e non devono avere il prefisso `VITE_`. La configurazione SMTP dell’app non modifica quella delle email di verifica account di Supabase.
+
+Se il servizio è assente o rifiuta il messaggio, l’iscrizione resta salvata e il sito informa l’utente che la mail di benvenuto non è stata inviata. Non viene dichiarata una consegna riuscita senza l’accettazione SMTP.
+
+Verifiche automatiche: `node --test scripts/registration-email.test.mjs`. Prima di considerare l’invio attivo, verificare anche la ricezione su una casella reale dopo aver configurato il servizio.
 
 ## Area amministratore
 
