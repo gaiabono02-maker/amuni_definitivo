@@ -13,7 +13,6 @@ import {
   ArrowRight,
   Heart,
   Check,
-  Sparkles,
 } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { Reveal } from "@/components/Reveal";
@@ -28,7 +27,6 @@ import { toast } from "sonner";
 import { AnimatedCounter } from "@/components/AnimatedCounter";
 import { SicilyMap } from "@/components/SicilyMap";
 import { SeasonalCalendar } from "@/components/SeasonalCalendar";
-import { Testimonials } from "@/components/Testimonials";
 import { fetchAziende, type DbAzienda } from "@/lib/catalog";
 import heroImg from "@/assets/hero-sicily.jpg";
 import territorioImg from "@/assets/territorio.jpg";
@@ -86,7 +84,7 @@ type PianoSostenitore = {
 const pianiSostenitore: PianoSostenitore[] = [
   {
     nome: "Sostenitore",
-    descrizione: "Il piano più scelto da chi crede nel progetto.",
+    descrizione: "Per chi crede nel progetto e vuole sostenere la nostra rete.",
     benefici: [
       "Newsletter esclusiva del network",
       "Inviti agli eventi della rete",
@@ -96,16 +94,6 @@ const pianiSostenitore: PianoSostenitore[] = [
       "Accesso anticipato ai nuovi prodotti",
     ],
     evidenza: true,
-  },
-  {
-    nome: "Ambasciatore",
-    descrizione: "Per partner e aziende che vogliono fare la differenza.",
-    benefici: [
-      "Tutti i vantaggi del piano Sostenitore",
-      "Logo come partner ufficiale del network",
-      "Visita guidata in azienda agricola",
-      <span key="box-stag"><strong className="underline decoration-2 underline-offset-2">4 box stagionali</strong> di prodotti del territorio</span>,
-    ],
   },
 ];
 
@@ -350,7 +338,6 @@ function Index() {
       <BottegaFeatures />
       <BlogSection />
       <SeasonalCalendar />
-      <Testimonials />
       <SostenitoriSection />
 
       {/* COME ADERIRE */}
@@ -496,12 +483,12 @@ function SostenitoriSection() {
           </h2>
           <div className="mx-auto mt-4 h-1 w-16 rounded-full bg-gold" />
           <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground">
-            Scegli il piano che fa per te e contribuisci alla crescita della rete di imprese
+            Diventa sostenitore e contribuisci alla crescita della rete di imprese
             agricole del territorio. Ogni contributo aiuta i nostri produttori.
           </p>
         </div>
 
-        <div className="mx-auto grid max-w-4xl items-stretch gap-6 lg:grid-cols-2">
+        <div className="mx-auto grid max-w-lg items-stretch gap-6">
           {pianiSostenitore.map((p, i) => (
             <Reveal key={p.nome} delay={i * 120}>
               <div
@@ -511,11 +498,6 @@ function SostenitoriSection() {
                     : "border-border bg-card"
                 }`}
               >
-                {p.evidenza && (
-                  <span className="absolute -top-3 left-1/2 inline-flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-secondary px-4 py-1 text-xs font-semibold uppercase tracking-wider text-secondary-foreground">
-                    <Sparkles className="h-3.5 w-3.5" /> Più scelto
-                  </span>
-                )}
                 <h3 className="font-serif text-2xl font-bold">{p.nome}</h3>
                 <p className={`mt-3 text-sm leading-relaxed ${p.evidenza ? "text-primary-foreground/85" : "text-muted-foreground"}`}>
                   {p.descrizione}

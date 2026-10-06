@@ -86,7 +86,6 @@ type Sostenitore = {
 const PIANI_ADMIN = [
   { value: "nessuno", label: "Nessun piano" },
   { value: "sostenitore", label: "Sostenitore (45 €/3 mesi)" },
-  { value: "ambasciatore", label: "Ambasciatore (100 €/anno)" },
 ];
 
 const STATI_ABBONAMENTO = [

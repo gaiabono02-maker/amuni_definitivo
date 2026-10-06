@@ -85,7 +85,6 @@ export const STATI_ABBONAMENTO: { value: string; label: string }[] = [
 export const PIANI = [
   { value: "nessuno", label: "Nessun piano" },
   { value: "sostenitore", label: "Sostenitore — 45 € / 3 mesi" },
-  { value: "ambasciatore", label: "Ambasciatore — 100 € / anno" },
 ];
 
 const statoBadge = (stato: string) => {
@@ -377,7 +376,7 @@ function ProfiloPage() {
                 Non hai ancora un piano da sostenitore attivo.
               </p>
               <Button asChild>
-                <a href="/#sostenitori">Scopri i piani</a>
+                <a href="/#sostenitori">Scopri il piano Sostenitore</a>
               </Button>
             </div>
           )}
