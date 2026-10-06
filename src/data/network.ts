@@ -60,12 +60,3 @@ export const calendario: Stagione[] = [
   { mese: "Novembre", prodotti: [{ emoji: "\u{1FAD2}", nome: "Olio nuovo" }, { emoji: "\u{1F34A}", nome: "Primi agrumi" }, { emoji: "\u{1F96C}", nome: "Cavolfiori" }] },
   { mese: "Dicembre", prodotti: [{ emoji: "\u{1F34A}", nome: "Arance" }, { emoji: "\u{1F34B}", nome: "Limoni" }, { emoji: "\u{1F330}", nome: "Frutta secca" }] },
 ];
-
-export type Testimonianza = { nome: string; citta: string; emoji: string; testo: string };
-
-export const testimonianze: Testimonianza[] = [
-  { nome: "Giulia Marino", citta: "Palermo", emoji: "\u{1F469}", testo: "Prodotti straordinari e genuini. Ho riscoperto i sapori autentici della mia terra, e sapere che sostengo i produttori locali rende tutto più bello." },
-  { nome: "Antonio Russo", citta: "Agrigento", emoji: "\u{1F468}", testo: "Finalmente una rete che valorizza le piccole aziende agricole. L'olio e il vino che ho ordinato sono di una qualità incredibile." },
-  { nome: "Marta Lo Verde", citta: "Catania", emoji: "\u{1F469}\u200D\u{1F9B0}", testo: "La box stagionale è un'esperienza unica: ogni trimestre scopro nuove eccellenze siciliane. Consigliatissimo a chi ama mangiare bene." },
-  { nome: "Salvatore Greco", citta: "Trapani", emoji: "\u{1F9D1}", testo: "A.M.U.N.Ì. ha dato visibilità alla mia azienda e mi ha messo in contatto con altri produttori. Fare rete funziona davvero." },
-];
