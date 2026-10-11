@@ -31,7 +31,7 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/admin/")({
   ssr: false,
   head: () => ({
-    meta: [{ title: "Le tue iscrizioni — A.M.U.N.Ì." }, { name: "robots", content: "noindex, nofollow" }],
+    meta: [{ title: "Pannello amministratore — A.M.U.N.Ì." }, { name: "robots", content: "noindex, nofollow" }],
   }),
   component: AdminDashboard,
 });
@@ -138,6 +138,8 @@ function AdminDashboard() {
   const [companyPage, setCompanyPage] = useState(0);
   const [pending, setPending] = useState<string[]>([]);
   const [iscrizioni, setIscrizioni] = useState<Iscrizione[]>([]);
+  const [orderSearch, setOrderSearch] = useState("");
+  const [orderPage, setOrderPage] = useState(0);
   const [acquirenti, setAcquirenti] = useState<Acquirente[]>([]);
   const [richieste, setRichieste] = useState<RichiestaProdotto[]>([]);
   const [sostenitori, setSostenitori] = useState<Sostenitore[]>([]);
@@ -363,10 +365,18 @@ function AdminDashboard() {
       ]),
     ]);
 
+  const filteredOrders = acquirenti.filter(order =>
+    [order.id, order.nome, order.email, ...(Array.isArray(order.articoli) ? order.articoli.map(item => item.nome) : [])]
+      .join(" ").toLocaleLowerCase("it").includes(orderSearch.trim().toLocaleLowerCase("it"))
+  );
+  const orderLastPage = Math.max(0, Math.ceil(filteredOrders.length / 20) - 1);
+  const currentOrderPage = Math.min(orderPage, orderLastPage);
+  const visibleOrders = filteredOrders.slice(currentOrderPage * 20, (currentOrderPage + 1) * 20);
+
   const exportAcquirenti = () =>
-    downloadCSV("acquirenti.csv", [
+    downloadCSV("ordini.csv", [
       ["Data", "Nome", "Email", "Articoli", "Totale"],
-      ...acquirenti.map((r) => [
+      ...filteredOrders.map((r) => [
         fmtDate(r.created_at),
         r.nome,
         r.email,
@@ -460,18 +470,21 @@ function AdminDashboard() {
           </div>
         </div>
 
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-3"><div><h1 className="font-serif text-3xl font-bold text-brown">La tua rete, in un unico posto</h1><p className="mt-2 text-sm text-muted-foreground">Consulta tutti i clienti registrati e le iscrizioni delle aziende, cerca i contatti ed esporta gli elenchi.</p></div><div className="flex gap-2"><Button variant="outline" disabled={refreshing} onClick={()=>setRefresh(n=>n+1)}>{refreshing ? "Aggiornamento…" : "Aggiorna dati"}</Button><Button variant="outline" asChild><a href="/" target="_blank" rel="noreferrer">Apri il sito</a></Button></div></div>
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3"><div><h1 className="font-serif text-3xl font-bold text-brown">La tua rete, in un unico posto</h1><p className="mt-2 text-sm text-muted-foreground">Consulta ordini, persone e aziende iscritte, cerca i contatti ed esporta gli elenchi.</p></div><div className="flex gap-2"><Button variant="outline" disabled={refreshing} onClick={()=>setRefresh(n=>n+1)}>{refreshing ? "Aggiornamento…" : "Aggiorna dati"}</Button><Button variant="outline" asChild><a href="/" target="_blank" rel="noreferrer">Apri il sito</a></Button></div></div>
         <p className="mb-4 text-xs text-muted-foreground" role="status">{loadedAt ? `Ultimo aggiornamento: ${loadedAt.toLocaleTimeString("it-IT")}. Premi Aggiorna dati per vedere le nuove iscrizioni.` : ""}</p>
+        <div className="mb-5 grid gap-3 sm:grid-cols-3">
+          {[{value: "acquirenti", label: "Vedi ordini", count: acquirenti.length}, {value: "clienti", label: "Vedi persone iscritte", count: sostenitori.length}, {value: "candidature", label: "Vedi aziende iscritte", count: iscrizioni.length}].map(item => <Button key={item.value} variant={tab === item.value ? "default" : "outline"} className="h-auto justify-between px-5 py-4" onClick={() => setTab(item.value)}>{item.label}<span className="ml-3 font-bold">{item.count}</span></Button>)}
+        </div>
         <Tabs value={tab} onValueChange={setTab}>
           <TabsList className="mb-5 flex h-auto w-full flex-wrap justify-start gap-1">
-            <TabsTrigger value="clienti">Clienti registrati ({sostenitori.length})</TabsTrigger>
+            <TabsTrigger value="acquirenti">Ordini ({acquirenti.length})</TabsTrigger>
+            <TabsTrigger value="clienti">Persone iscritte ({sostenitori.length})</TabsTrigger>
             <TabsTrigger value="candidature">Iscrizioni aziende ({iscrizioni.length})</TabsTrigger>
             <TabsTrigger value="network">Schede aziende ({companyCount})</TabsTrigger>
             <TabsTrigger value="prodotti">Prodotti</TabsTrigger>
             <TabsTrigger value="box">Box</TabsTrigger>
             <TabsTrigger value="mese">Prodotto del mese</TabsTrigger>
             <TabsTrigger value="interesse">Contatti commerciali</TabsTrigger>
-            <TabsTrigger value="acquirenti">Ordini ({acquirenti.length})</TabsTrigger>
             <TabsTrigger value="richieste">Richieste ({richieste.length})</TabsTrigger>
             <TabsTrigger value="sostenitori">Piani clienti</TabsTrigger>
             <TabsTrigger value="account">Il mio account</TabsTrigger>
@@ -552,8 +565,11 @@ function AdminDashboard() {
           </TabsContent>
 
           <TabsContent value="acquirenti">
+            <h2 className="font-serif text-2xl font-bold text-brown">Ordini ricevuti</h2>
+            <p className="mb-4 mt-1 text-sm text-muted-foreground">Ordini inviati dal carrello, con contatti, articoli e importo. Contatta il cliente per finalizzare l’acquisto.</p>
+            <Input className="mb-4 max-w-md" aria-label="Cerca ordini" placeholder="Cerca cliente, email, prodotto o numero ordine…" value={orderSearch} onChange={e => {setOrderSearch(e.target.value); setOrderPage(0);}} />
             <div className="mb-3 flex justify-end">
-              <Button variant="outline" size="sm" onClick={exportAcquirenti} disabled={acquirenti.length === 0}>
+              <Button variant="outline" size="sm" onClick={exportAcquirenti} disabled={filteredOrders.length === 0}>
                 <Download className="h-4 w-4" /> Esporta CSV
               </Button>
             </div>
@@ -561,6 +577,7 @@ function AdminDashboard() {
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead>Ordine</TableHead>
                     <TableHead>Data</TableHead>
                     <TableHead>Nome</TableHead>
                     <TableHead>Email</TableHead>
@@ -569,15 +586,16 @@ function AdminDashboard() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {acquirenti.length === 0 ? (
+                  {filteredOrders.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={5} className="py-8 text-center text-muted-foreground">
-                        Nessun acquirente registrato.
+                      <TableCell colSpan={6} className="py-8 text-center text-muted-foreground">
+                        {acquirenti.length ? "Nessun ordine corrisponde alla ricerca." : "Non ci sono ancora ordini. Gli ordini inviati dal carrello compariranno qui."}
                       </TableCell>
                     </TableRow>
                   ) : (
-                    acquirenti.map((r) => (
+                    visibleOrders.map((r) => (
                       <TableRow key={r.id}>
+                        <TableCell className="font-mono text-xs" title={r.id}>#{r.id.slice(0, 8)}</TableCell>
                         <TableCell className="whitespace-nowrap text-xs text-muted-foreground">
                           {fmtDate(r.created_at)}
                         </TableCell>
@@ -599,6 +617,7 @@ function AdminDashboard() {
                 </TableBody>
               </Table>
             </div>
+            <div className="mt-4 flex flex-wrap items-center justify-between gap-3"><p className="text-sm text-muted-foreground">{filteredOrders.length} ordini · Pagina {currentOrderPage + 1} di {orderLastPage + 1}</p>{orderLastPage > 0 && <div className="flex gap-2"><Button variant="outline" disabled={currentOrderPage === 0} onClick={() => setOrderPage(currentOrderPage - 1)}>Precedente</Button><Button variant="outline" disabled={currentOrderPage === orderLastPage} onClick={() => setOrderPage(currentOrderPage + 1)}>Successiva</Button></div>}</div>
           </TabsContent>
 
           <TabsContent value="richieste">

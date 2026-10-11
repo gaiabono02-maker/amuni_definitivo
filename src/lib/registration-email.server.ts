@@ -1,7 +1,9 @@
 import nodemailer from "nodemailer";
 import { registrationEmail, type RegistrationKind } from "./registration-email.ts";
 
-export async function sendRegistrationConfirmation(kind: RegistrationKind, email: string, nome: string) {
+export type ApplicationDetails = { azienda: string; settore?: string; provincia?: string; messaggio?: string };
+
+export async function sendRegistrationConfirmation(kind: RegistrationKind, email: string, nome: string, details?: ApplicationDetails) {
   const host = process.env.AMUNI_SMTP_HOST;
   const user = process.env.AMUNI_SMTP_USER;
   const pass = process.env.AMUNI_SMTP_PASSWORD;
@@ -16,7 +18,7 @@ export async function sendRegistrationConfirmation(kind: RegistrationKind, email
     console.error("[registration-email] Missing or invalid email configuration");
     return false;
   }
-  const mailbox = "formamentisonlus@gmail.com";
+  const mailbox = "amunirichieste@gmail.com";
   try {
     const transport = nodemailer.createTransport({
       ...(validSmtp
@@ -28,14 +30,32 @@ export async function sendRegistrationConfirmation(kind: RegistrationKind, email
       disableFileAccess: true,
       disableUrlAccess: true,
     });
-    const result = await transport.sendMail({
+    const confirmation = transport.sendMail({
       from: {name: "A.M.U.N.Ì. — Forma Mentis", address: validSmtp ? from : mailbox},
       to: [{name: nome, address: email}],
       replyTo: mailbox,
       ...registrationEmail(kind, nome),
       headers: {"Auto-Submitted": "auto-generated"},
-    });
-    return result.accepted.some(address => typeof address === "string" && address.toLowerCase() === email.toLowerCase());
+    }).then(result => result.accepted.some(address => typeof address === "string" && address.toLowerCase() === email.toLowerCase()))
+      .catch(() => { console.error("[registration-email] Confirmation failed"); return false; });
+    {
+      // Only contact details are passed here; never include passwords or sessions.
+      await transport.sendMail({
+        from: {name: "A.M.U.N.Ì. — Forma Mentis", address: validSmtp ? from : mailbox},
+        to: mailbox,
+        replyTo: {name: nome, address: email},
+        subject: kind === "azienda" ? "Nuova candidatura azienda — A.M.U.N.Ì." : "Nuovo profilo creato — A.M.U.N.Ì.",
+        text: kind === "azienda"
+          ? `È arrivata una candidatura aziendale dal sito A.M.U.N.Ì.\n\nAzienda: ${details?.azienda || "Non indicata"}\nReferente: ${nome}\nEmail: ${email}\nSettore: ${details?.settore || "Non indicato"}\nProvincia: ${details?.provincia || "Non indicata"}\nMessaggio: ${details?.messaggio || "Nessun messaggio"}\n\nLa candidatura è disponibile nel pannello amministratore per la valutazione. Puoi rispondere direttamente a questa email per contattare il referente.`
+          : `È stato creato un nuovo profilo sul sito A.M.U.N.Ì.\n\nNome: ${nome}\nEmail: ${email}\n\nPuoi rispondere a questa email per contattare la persona. L'eventuale verifica dell'indirizzo email è gestita separatamente.`,
+        headers: {"Auto-Submitted": "auto-generated"},
+      }).then(result => {
+        if (!result.accepted.some(address => typeof address === "string" && address.toLowerCase() === mailbox)) {
+          console.error("[registration-email] Team notification rejected");
+        }
+      }).catch(() => { console.error("[registration-email] Team notification failed"); });
+    }
+    return await confirmation;
   } catch {
     console.error("[registration-email] Delivery failed");
     return false;

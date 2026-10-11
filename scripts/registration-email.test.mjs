@@ -1,5 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import nodemailer from 'nodemailer';
+import { sendApplicationConfirmation } from '../src/lib/iscrizione-email.server.ts';
 import { registerCustomerAccount } from '../src/lib/customer-registration.server.ts';
 import { registrationEmail } from '../src/lib/registration-email.ts';
 import { sendRegistrationConfirmation } from '../src/lib/registration-email.server.ts';
@@ -34,4 +36,55 @@ test('both templates confirm receipt and explain the next steps',()=>{
 test('an unconfigured mail service reports failure without sending',async()=>{
  for(const name of ['AMUNI_SMTP_HOST','AMUNI_SMTP_USER','AMUNI_SMTP_PASSWORD','AMUNI_NOREPLY_EMAIL','AMUNI_GMAIL_APP_PASSWORD']) delete process.env[name];
  assert.equal(await sendRegistrationConfirmation('cliente',input.email,input.nome),false);
+});
+
+test('new profiles notify the team and welcome the customer independently', async t => {
+ for (const failure of [null, 'team', 'customer']) {
+  await t.test(String(failure), async t => {
+   process.env.AMUNI_GMAIL_APP_PASSWORD='test-password';
+   t.after(()=>{delete process.env.AMUNI_GMAIL_APP_PASSWORD;});
+   const messages=[];
+   t.mock.method(nodemailer,'createTransport',()=>({sendMail:async message=>{
+    messages.push(message);
+    const team=typeof message.to==='string';
+    if ((team && failure==='team') || (!team && failure==='customer')) throw new Error('SMTP failure');
+    return {accepted:[team ? message.to : message.to[0].address]};
+   }}));
+   const result=await registerCustomerAccount(client({user:user(),session}),input);
+   assert.equal(result.emailSent,failure!=='customer');
+   assert.equal(messages.length,2);
+   const team=messages.find(message=>typeof message.to==='string');
+   assert.equal(team.to,'amunirichieste@gmail.com');
+   assert.equal(team.replyTo.address,input.email);
+   assert.ok(team.text.includes(input.nome));
+   assert.ok(!JSON.stringify(messages).includes(input.password));
+   assert.ok(!JSON.stringify(messages).includes(session.access_token));
+  });
+ }
+});
+
+test('company applications notify the team with details and confirm receipt independently', async t => {
+ const details={azienda:'Azienda prova',settore:'Agricoltura',provincia:'Palermo',messaggio:'Vorrei aderire'};
+ for (const failure of [null,'team','company']) {
+  await t.test(String(failure),async t=>{
+   process.env.AMUNI_GMAIL_APP_PASSWORD='test-password';
+   t.after(()=>{delete process.env.AMUNI_GMAIL_APP_PASSWORD;});
+   const messages=[];
+   t.mock.method(nodemailer,'createTransport',()=>({sendMail:async message=>{
+    messages.push(message);
+    const team=typeof message.to==='string';
+    if ((team && failure==='team') || (!team && failure==='company')) throw new Error('SMTP failure');
+    return {accepted:[team ? message.to : message.to[0].address]};
+   }}));
+   assert.equal(await sendApplicationConfirmation(input.email,input.nome,details),failure!=='company');
+   assert.equal(messages.length,2);
+   const team=messages.find(message=>typeof message.to==='string');
+   assert.equal(team.to,'amunirichieste@gmail.com');
+   assert.equal(team.replyTo.address,input.email);
+   for (const value of Object.values(details)) assert.ok(team.text.includes(value));
+   const company=messages.find(message=>Array.isArray(message.to));
+   assert.match(company.text,/esaminerà/);
+   assert.equal(company.replyTo,'amunirichieste@gmail.com');
+  });
+ }
 });

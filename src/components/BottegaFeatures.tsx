@@ -16,6 +16,8 @@ import { Reveal } from "@/components/Reveal";
 
 import { toast } from "sonner";
 import { z } from "zod";
+import { richiestaSchema } from "@/lib/richiesta.schema";
+import { submitProductRequest } from "@/lib/richiesta.functions";
 import { supabase } from "@/integrations/supabase/client";
 import {
   fetchProdottoDelMese,
@@ -285,12 +287,6 @@ function DettaglioProdotto({ prodotto, azienda, onClose, onInteresse }: {
 }
 
 /* ---------------- RICHIESTA PRODOTTO ---------------- */
-const richiestaSchema = z.object({
-  nome_prodotto: z.string().trim().min(1, "Indica il prodotto").max(150),
-  categoria: z.string().trim().max(80).optional(),
-  email: z.string().trim().email("Inserisci un'email valida").max(255),
-  note: z.string().trim().max(800).optional(),
-});
 
 function RichiestaProdotto() {
   const [loading, setLoading] = useState(false);
@@ -310,19 +306,18 @@ function RichiestaProdotto() {
       return;
     }
     setLoading(true);
-    const { error } = await supabase.from("richieste_prodotti").insert({
-      nome_prodotto: parsed.data.nome_prodotto,
-      categoria: parsed.data.categoria || "Altro",
-      email: parsed.data.email,
-      note: parsed.data.note || "",
-    });
-    setLoading(false);
-    if (error) {
+    try {
+      const { emailSent } = await submitProductRequest({ data: parsed.data });
+      form.reset();
+      toast.success(emailSent
+        ? "Richiesta inviata! Ti abbiamo inviato un'email di conferma. Ti ricontatteremo a breve."
+        : "Richiesta ricevuta! Ti ricontatteremo a breve.");
+      if (!emailSent) toast.info("Non è stato possibile inviare l'email di conferma, ma la tua richiesta è stata salvata.");
+    } catch {
       toast.error("Si è verificato un errore. Riprova più tardi.");
-      return;
+    } finally {
+      setLoading(false);
     }
-    form.reset();
-    toast.success("Richiesta inviata! Ti metteremo in contatto con la rete.");
   };
 
   return (

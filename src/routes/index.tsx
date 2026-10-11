@@ -156,10 +156,9 @@ function Index() {
 
       {/* SOCIAL PROOF / CONTATORI */}
       <section className="bg-navy py-6 text-cream">
-        <div className="mx-auto grid max-w-5xl grid-cols-3 gap-4 px-5 text-center lg:px-8">
+        <div className="mx-auto grid max-w-5xl grid-cols-2 gap-4 px-5 text-center lg:px-8">
           {[
             { n: aziende.length, suffix: "", label: "imprese pubblicate" },
-            { n: 80, suffix: "+", label: "prodotti disponibili" },
             { n: 6, suffix: "", label: "province coperte" },
           ].map((s) => (
             <div key={s.label}>
@@ -407,9 +406,9 @@ function Index() {
             <div className="mx-auto mt-4 h-1 w-16 rounded-full bg-gold" />
           </div>
           <div className="grid gap-6 sm:grid-cols-3">
-            <a href="mailto:formamentisonlus@gmail.com" className="flex flex-col items-center gap-3 rounded-2xl border border-border bg-card p-8 text-center shadow-sm transition-transform hover:-translate-y-1">
+            <a href="mailto:amunirichieste@gmail.com" className="flex flex-col items-center gap-3 rounded-2xl border border-border bg-card p-8 text-center shadow-sm transition-transform hover:-translate-y-1">
               <Mail className="h-7 w-7 text-primary" />
-              <span className="text-sm font-medium break-all">formamentisonlus@gmail.com</span>
+              <span className="text-sm font-medium break-all">amunirichieste@gmail.com</span>
             </a>
             <a href="tel:+393932881785" className="flex flex-col items-center gap-3 rounded-2xl border border-border bg-card p-8 text-center shadow-sm transition-transform hover:-translate-y-1">
               <Phone className="h-7 w-7 text-primary" />

@@ -49,6 +49,12 @@ Configurazione di hosting: https://vercel.com/docs/frameworks/full-stack/tanstac
 
 ## Email automatiche di iscrizione
 
+Ogni nuovo profilo cliente e candidatura aziendale genera anche una notifica a
+`amunirichieste@gmail.com`. Per le aziende include referente, azienda, settore,
+provincia e messaggio; rispondendo alla notifica si contatta il referente.
+La conferma all'azienda indica che la candidatura verrà valutata, senza dichiararla
+approvata. I due invii sono indipendenti e un errore email non annulla il salvataggio.
+
 Clienti e aziende ricevono una risposta di ringraziamento con la conferma di ricezione e il messaggio «Ti terremo aggiornato sulle novità del progetto e sui prossimi passi della tua iscrizione». Per le aziende il testo spiega anche la valutazione della candidatura.
 
 Le nuove registrazioni clienti passano da `registerCustomer`, che crea l’account con Supabase e invia il benvenuto solo per un account appena creato. Gestisce sia le sessioni immediate sia gli account che devono confermare l’indirizzo. Le candidature usano `submitApplication`, che salva prima di tentare l’invio.
@@ -56,22 +62,45 @@ Le nuove registrazioni clienti passano da `registerCustomer`, che crea l’accou
 **Attivazione del servizio email:** configurare le credenziali su Vercel in Production e ripubblicare. Il codice da solo non abilita le spedizioni.
 
 - SMTP: `AMUNI_SMTP_HOST`, `AMUNI_SMTP_PORT` (465 oppure 587), `AMUNI_SMTP_USER`, `AMUNI_SMTP_PASSWORD`, `AMUNI_NOREPLY_EMAIL` (mittente autorizzato).
-- In alternativa, per la casella `formamentisonlus@gmail.com`: impostare soltanto `AMUNI_GMAIL_APP_PASSWORD` con una password per app Google e lasciare vuoti host, utente, password e mittente SMTP. Non usare la password normale dell’account.
+- In alternativa, per la casella `amunirichieste@gmail.com`: impostare soltanto `AMUNI_GMAIL_APP_PASSWORD` con una password per app Google e lasciare vuoti host, utente, password e mittente SMTP. Non usare la password normale dell’account.
 
-Le risposte vengono recapitate a `formamentisonlus@gmail.com`. Tutte le credenziali sono server-only e non devono avere il prefisso `VITE_`. La configurazione SMTP dell’app non modifica quella delle email di verifica account di Supabase.
+Le risposte vengono recapitate a `amunirichieste@gmail.com`. Tutte le credenziali sono server-only e non devono avere il prefisso `VITE_`. La configurazione SMTP dell’app non modifica quella delle email di verifica account di Supabase.
 
 Se il servizio è assente o rifiuta il messaggio, l’iscrizione resta salvata e il sito informa l’utente che la mail di benvenuto non è stata inviata. Non viene dichiarata una consegna riuscita senza l’accettazione SMTP.
 
 Verifiche automatiche: `node --test scripts/registration-email.test.mjs`. Prima di considerare l’invio attivo, verificare anche la ricezione su una casella reale dopo aver configurato il servizio.
 
+## Email delle richieste prodotto
+
+Il modulo di richiesta prodotto salva la richiesta e invia due email indipendenti:
+una notifica a `amunirichieste@gmail.com` con prodotto, categoria, note e contatto
+del cliente, e la conferma preimpostata al cliente. Rispondendo alla notifica si
+scrive al cliente; rispondendo alla conferma si scrive a Forma Mentis.
+
+Per attivarle, configurare `AMUNI_GMAIL_APP_PASSWORD` sul server (Vercel,
+ambiente Production) e ripubblicare. Usare una password per app dell'account
+`amunirichieste@gmail.com`, con verifica in due passaggi attiva:
+https://support.google.com/accounts/answer/185833?hl=it.
+Non inserire la password normale dell'account o credenziali nel codice.
+
+Se un invio fallisce, l'altro viene comunque tentato e la richiesta resta nel
+pannello amministratore. Non sono previsti tentativi automatici successivi.
+Questo flusso riguarda il modulo di richiesta prodotto; i moduli «Contatta
+l'impresa» e le iscrizioni hanno flussi separati.
+
+Verifica senza inviare email reali: `node --test scripts/request-email.test.mjs`.
+L'attivazione richiede anche una prova di ricezione reale dopo la pubblicazione.
+
 ## Area amministratore
 
 Accesso: https://amuni-definitivo.vercel.app/admin/login. Solo gli account con ruolo `admin` possono leggere gli elenchi completi; i permessi sono verificati anche dalle policy Supabase.
 
+- **Ordini**: ordini inviati dal carrello, ricerca per cliente, email, prodotto o identificativo, pagine da 20 ed esportazione CSV dei risultati.
 - **Clienti registrati**: tutti i profili, compresi quelli senza ordini o piano, con ricerca, filtro provincia, scheda contatto e CSV dei risultati filtrati.
 - **Iscrizioni aziende**: candidature ricevute dal modulo pubblico, ricerca, filtro stato, esportazione CSV e aggiornamento della valutazione.
 - **Aggiorna dati** ricarica le nuove iscrizioni; l’orario dell’ultimo aggiornamento è visibile nel pannello.
-- **Il mio account** permette di cambiare la password.
+- **Il mio account** permette di cambiare la password. Dalla pagina di accesso, **Password dimenticata?** invia un link di recupero all’indirizzo dell’account.
+- I pulsanti **Vedi ordini**, **Vedi persone iscritte** e **Vedi aziende iscritte** aprono direttamente gli elenchi principali.
 
 I profili vengono creati dal trigger `on_auth_user_created`; le candidature aziendali sono salvate in `iscrizioni`. Gli elenchi vengono letti a blocchi ordinati e mostrati su pagine da 20, senza fermarsi al limite predefinito dell’API.
 

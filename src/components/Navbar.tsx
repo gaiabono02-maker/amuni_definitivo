@@ -127,7 +127,7 @@ export function Navbar() {
           <li className="mb-2 border-b border-border pb-3 pt-1">
             <Link to="/admin" onClick={() => setOpen(false)} className="flex items-start gap-3 rounded-xl bg-navy px-4 py-3 text-cream">
               <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-gold" />
-              <span><span className="block text-sm font-semibold text-gold">Area amministratore</span><span className="mt-1 block text-xs text-cream/80">Accedi al pannello clienti e aziende</span></span>
+              <span><span className="block text-sm font-semibold text-gold">Area amministratore</span><span className="mt-1 block text-xs text-cream/80">Accedi a ordini, persone e aziende</span></span>
             </Link>
           </li>
           {links.map((l) => (

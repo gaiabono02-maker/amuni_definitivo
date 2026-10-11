@@ -36,7 +36,7 @@ function IscrizioneImpresa() {
           <h2 id="modulo-iscrizione" className="mb-2 font-serif text-2xl font-bold">Iscrivi la tua impresa</h2>
           <p className="mb-6 text-sm text-muted-foreground">Nome, azienda ed email sono obbligatori. Gli altri campi ci aiutano a conoscerti meglio.</p>
           <CompanyApplicationForm />
-          <p className="mt-5 text-sm text-muted-foreground">Hai bisogno di aiuto? <a className="text-primary underline" href="mailto:formamentisonlus@gmail.com">Scrivici</a>.</p>
+          <p className="mt-5 text-sm text-muted-foreground">Hai bisogno di aiuto? <a className="text-primary underline" href="mailto:amunirichieste@gmail.com">Scrivici</a>.</p>
         </section>
       </main>
     </div>

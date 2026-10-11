@@ -14,6 +14,6 @@ export const submitApplication = createServerFn({ method: "POST" })
     const { error } = await supabase.from("iscrizioni").insert(data);
     if (error) throw new Error("Impossibile salvare la candidatura.");
     // A delivery failure must not invite a duplicate application.
-    const emailSent = await sendApplicationConfirmation(data.email, data.nome);
+    const emailSent = await sendApplicationConfirmation(data.email, data.nome, data);
     return { emailSent };
   });

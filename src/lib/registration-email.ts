@@ -18,7 +18,7 @@ Ti terremo aggiornato sulle novità del progetto e sui prossimi passi della tua 
 
 A.M.U.N.Ì., promosso da Associazione Forma Mentis OdV, unisce le imprese agricole siciliane e le persone che vogliono conoscere e valorizzare i prodotti del territorio.
 
-Per informazioni puoi rispondere a questa email o scriverci a formamentisonlus@gmail.com.
+Per informazioni puoi rispondere a questa email o scriverci a amunirichieste@gmail.com.
 
 A presto,
 Il team A.M.U.N.Ì.
