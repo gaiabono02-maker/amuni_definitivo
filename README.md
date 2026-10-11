@@ -43,7 +43,7 @@ Le migrazioni sono state applicate tramite Management API in una transazione; la
 
 Il vecchio database è distinto da questo progetto: record, account e file caricati nel vecchio storage non sono contenuti nella copia dei sorgenti e non sono stati trasferiti. Il nuovo database parte vuoto. L’account della proprietaria è abilitato con il ruolo `admin`. Le credenziali iniziali sono conservate separatamente dal repository.
 
-L’endpoint `/api/notify-stato` rimane quello originale: risponde correttamente ma l’invio email reale non è implementato.
+Il vecchio endpoint `/api/notify-stato` non viene usato dal pannello. Gli esiti delle candidature passano dalla funzione server autenticata `updateApplicationDecision`.
 
 Configurazione di hosting: https://vercel.com/docs/frameworks/full-stack/tanstack-start
 
@@ -113,3 +113,20 @@ Pagina pubblica: https://amuni-sicilia.vercel.app/admin/recupera-password.
 Supabase autorizza ancora il dominio `https://amuni-definitivo.vercel.app`: è un dominio pubblico aggiuntivo dello stesso progetto e viene usato per `/admin/reset-password`. Mantenere entrambi gli alias collegati a ogni pubblicazione finché la configurazione Auth non viene aggiornata. I vecchi link diretti alla home vengono inoltrati alla pagina di impostazione password conservando il frammento di autenticazione.
 
 Verifica permessi e inviti senza email reali: `node --test scripts/admin-users.test.mjs`.
+
+### Email di approvazione e rifiuto aziende
+
+Quando un amministratore cambia una candidatura in **Approvata** o **Rifiutata**,
+la funzione server verifica i permessi, legge il contatto dalla candidatura salvata,
+registra il nuovo stato e invia al referente l’email con l’esito. Le risposte arrivano
+a `amunirichieste@gmail.com`. Il ritorno a **In attesa** non invia email.
+
+L’approvazione comunica i prossimi passi senza dichiarare che la scheda sia già pubblicata.
+Se SMTP rifiuta l’invio, il pannello segnala lo stato salvato e mostra **Riprova email**
+sulla candidatura. Il risultato di invio è mostrato nella sessione del pannello corrente;
+non è uno storico persistente delle email. Nessun invio è previsto per le candidature
+già approvate o rifiutate prima di questa modifica. Ripetere lo stesso stato non reinvia
+l’email; il tentativo esplicito di invio fallito è separato dal cambio stato.
+
+Usa la stessa configurazione SMTP/Gmail delle altre email.
+Verifiche senza inviare messaggi reali: `node --test scripts/application-decision.test.mjs scripts/admin-users.test.mjs`.

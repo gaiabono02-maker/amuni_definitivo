@@ -1,3 +1,4 @@
+import { updateApplicationDecision } from "@/lib/application-decision.functions";
 import { ClientRegistrations } from "@/components/admin/ClientRegistrations";
 import { fetchAllRows } from "@/lib/admin-pagination";
 import { downloadCSV } from "@/lib/admin-csv";
@@ -138,6 +139,7 @@ function AdminDashboard() {
   const [loadedAt, setLoadedAt] = useState<Date | null>(null);
   const [companyPage, setCompanyPage] = useState(0);
   const [pending, setPending] = useState<string[]>([]);
+  const [decisionEmails, setDecisionEmails] = useState<Record<string, {stato: string; sent: boolean}>>({});
   const [iscrizioni, setIscrizioni] = useState<Iscrizione[]>([]);
   const [orderSearch, setOrderSearch] = useState("");
   const [orderPage, setOrderPage] = useState(0);
@@ -226,27 +228,28 @@ function AdminDashboard() {
     navigate({ to: "/admin/login" });
   };
 
-  const updateStato = async (r: Iscrizione, nuovoStato: string) => {
+  const updateStato = async (r: Iscrizione, nuovoStato: string, retryEmail = false) => {
     if (pending.includes(r.id)) return;
+    if (nuovoStato !== "in_attesa" && nuovoStato !== "approvata" && nuovoStato !== "rifiutata") return;
     setPending(prev => [...prev, r.id]);
-    const precedente = r.stato;
-    setIscrizioni((prev) =>
-      prev.map((x) => (x.id === r.id ? { ...x, stato: nuovoStato } : x))
-    );
-    const { error } = await supabase
-      .from("iscrizioni")
-      .update({ stato: nuovoStato })
-      .eq("id", r.id).select("id").single();
-    setPending(prev => prev.filter(id => id !== r.id));
-    if (error) {
-      setIscrizioni((prev) =>
-        prev.map((x) => (x.id === r.id ? { ...x, stato: precedente } : x))
-      );
-      toast.error("Errore nell'aggiornamento dello stato");
-      return;
+    try {
+      const { data, error } = await supabase.auth.getSession();
+      if (error || !data.session) throw new Error("Sessione scaduta. Accedi di nuovo.");
+      const result = await updateApplicationDecision({data: {token: data.session.access_token, id: r.id, stato: nuovoStato, retryEmail}});
+      setIscrizioni(prev => prev.map(x => x.id === r.id ? {...x, stato: result.stato} : x));
+      if (result.emailAttempted) {
+        setDecisionEmails(prev => ({...prev, [r.id]: {stato: result.stato, sent: result.emailSent}}));
+        if (result.emailSent) toast.success(`Stato: ${statoLabelIscrizione(result.stato)}. Email di risposta inviata al referente.`);
+        else toast.warning("Stato salvato, ma l’email di risposta non è stata inviata. Puoi riprovare dalla candidatura.");
+      } else if (result.changed) {
+        setDecisionEmails(prev => { const next = {...prev}; delete next[r.id]; return next; });
+        toast.success(`Stato aggiornato: ${statoLabelIscrizione(result.stato)}`);
+      }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Errore nell’aggiornamento dello stato.");
+    } finally {
+      setPending(prev => prev.filter(id => id !== r.id));
     }
-    toast.success(`Stato aggiornato: ${statoLabelIscrizione(nuovoStato)}`);
-
   };
 
   const updateStatoRichiesta = async (r: RichiestaProdotto, nuovoStato: string) => {
@@ -501,7 +504,7 @@ function AdminDashboard() {
           <TabsContent value="account"><AdminAccount email={email}/></TabsContent>
           <TabsContent value="candidature">
             <h2 className="font-serif text-2xl font-bold text-brown">Iscrizioni delle aziende</h2>
-            <p className="mb-4 mt-1 text-sm text-muted-foreground">Valuta le richieste e crea la scheda delle aziende approvate. Il cambio di stato viene registrato nel pannello.</p>
+            <p className="mb-4 mt-1 text-sm text-muted-foreground">Valuta le richieste e crea la scheda delle aziende approvate. Approvando o rifiutando una candidatura inviamo un’email di risposta al referente. Lo stato resta salvato anche se l’invio non riesce.</p>
             <div className="mb-4 flex flex-wrap gap-3"><Input className="max-w-md" aria-label="Cerca candidature" placeholder="Cerca referente, azienda o email…" value={search} onChange={e=>{setSearch(e.target.value);setCompanyPage(0);}}/><select aria-label="Filtra candidature per stato" className="rounded-md border bg-background px-3 py-2 text-sm" value={filter} onChange={e=>{setFilter(e.target.value);setCompanyPage(0);}}><option value="tutte">Tutti gli stati</option>{STATI_ISCRIZIONE.map(x=><option key={x.value} value={x.value}>{x.label}</option>)}</select></div>
             <div className="mb-3 flex justify-end">
               <Button variant="outline" size="sm" onClick={exportAziende} disabled={filteredCompanies.length === 0}>
@@ -556,6 +559,8 @@ function AdminDashboard() {
                               ))}
                             </SelectContent>
                           </Select>
+                          {pending.includes(r.id) && <p className="mt-2 text-xs text-muted-foreground" role="status">Salvataggio e invio in corso…</p>}
+                          {decisionEmails[r.id]?.stato === r.stato && <div className="mt-2 max-w-48 text-xs" role="status">{decisionEmails[r.id].sent ? <p className="text-muted-foreground">Email di risposta inviata.</p> : <><p className="text-destructive">Email non inviata.</p><Button className="mt-2" variant="outline" size="sm" disabled={pending.includes(r.id)} onClick={() => updateStato(r, r.stato, true)}>Riprova email</Button></>}</div>}
                           {r.stato === "approvata" && <Button className="mt-2" variant="outline" size="sm" onClick={()=>{setSeed({nome:r.azienda,settore:r.settore || "",provincia:r.provincia || ""});setTab("network");}}>Crea scheda azienda</Button>}
                         </TableCell>
                       </TableRow>
