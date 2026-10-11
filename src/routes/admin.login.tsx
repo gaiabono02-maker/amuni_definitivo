@@ -6,25 +6,48 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { passwordRedirectUrl } from "@/lib/auth-redirect";
 
 export const Route = createFileRoute("/admin/login")({
   ssr: false,
   head: () => ({
     meta: [{ title: "Accesso amministratore — A.M.U.N.Ì." }, { name: "robots", content: "noindex, nofollow" }],
   }),
-  component: AdminLogin,
+  component: () => <AdminLogin />,
 });
 
-function AdminLogin() {
+export function AdminLogin({ initialMode = "login" }: { initialMode?: "login" | "forgot" | "reset" }) {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [mode, setMode] = useState<"login" | "forgot" | "reset">("login");
+  const [mode, setMode] = useState<"login" | "forgot" | "reset">(initialMode);
   const [confirm, setConfirm] = useState("");
   const [sent, setSent] = useState(false);
+  const [linkError, setLinkError] = useState("");
 
   useEffect(() => {
+    let active = true;
+    setMode(initialMode);
+    setSent(false);
+    setPassword("");
+    setConfirm("");
+    setLinkError("");
+    if (initialMode === "reset") {
+      setLoading(true);
+      void (async () => {
+        try {
+          const { data, error } = await supabase.auth.getUser();
+          if (error || !data.user) throw new Error("Il link non è valido oppure è scaduto. Richiedi un nuovo link di recupero.");
+          const { data: role, error: roleError } = await supabase.from("user_roles").select("role").eq("user_id", data.user.id).eq("role", "admin").maybeSingle();
+          if (roleError || !role) throw new Error("Questo account non ha i permessi di amministratore.");
+        } catch (err) {
+          if (active) setLinkError(err instanceof Error ? err.message : "Impossibile verificare il link. Riprova.");
+        } finally {
+          if (active) setLoading(false);
+        }
+      })();
+    }
     const { data } = supabase.auth.onAuthStateChange((event) => {
       if (event === "PASSWORD_RECOVERY") {
         setMode("reset");
@@ -32,8 +55,8 @@ function AdminLogin() {
         setConfirm("");
       }
     });
-    return () => data.subscription.unsubscribe();
-  }, []);
+    return () => { active = false; data.subscription.unsubscribe(); };
+  }, [initialMode]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,7 +64,7 @@ function AdminLogin() {
     try {
       if (mode === "forgot") {
         const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-          redirectTo: `${window.location.origin}/admin/login`,
+          redirectTo: passwordRedirectUrl(window.location.origin),
         });
         if (error) throw new Error("Impossibile inviare il link. Riprova tra qualche minuto.");
         setSent(true);
@@ -88,7 +111,7 @@ function AdminLogin() {
           </p>
         </div>
 
-        {sent ? <p className="text-sm" role="status">Se l’indirizzo è associato a un account, riceverai un’email con il link per impostare una nuova password. Controlla anche la cartella spam.</p> : <form onSubmit={handleSubmit} className="space-y-4">
+        {linkError ? <p className="text-sm" role="alert">{linkError}</p> : sent ? <p className="text-sm" role="status">Se l’indirizzo è associato a un account, riceverai un’email con il link per impostare una nuova password. Controlla anche la cartella spam.</p> : <form onSubmit={handleSubmit} className="space-y-4">
           {mode !== "reset" && <div className="space-y-1.5">
             <Label htmlFor="email">Email</Label>
             <Input
@@ -119,7 +142,7 @@ function AdminLogin() {
             {loading ? "Operazione in corso…" : mode === "login" ? "Accedi" : mode === "forgot" ? "Invia link di recupero" : "Salva password e accedi"}
           </Button>
         </form>}
-        {mode !== "reset" && <Button variant="link" className="mt-3 w-full" disabled={loading} onClick={() => {setMode(mode === "login" ? "forgot" : "login"); setSent(false); setPassword("");}}>{mode === "login" ? "Password dimenticata?" : "Torna all’accesso"}</Button>}
+        <Button variant="link" className="mt-3 w-full" disabled={loading} onClick={() => navigate({to: mode === "login" || linkError ? "/admin/recupera-password" : "/admin/login"})}>{linkError ? "Richiedi un nuovo link" : mode === "login" ? "Password dimenticata?" : "Torna all’accesso"}</Button>
 
         <p className="mt-5 text-center text-xs text-muted-foreground">Accesso riservato agli amministratori autorizzati.</p>
         <a href="/" className="mt-4 block text-center text-sm text-primary hover:underline">Torna al sito</a>

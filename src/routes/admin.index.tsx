@@ -3,6 +3,7 @@ import { fetchAllRows } from "@/lib/admin-pagination";
 import { downloadCSV } from "@/lib/admin-csv";
 import { CatalogManager } from "@/components/admin/CatalogManager";
 import { InterestManager } from "@/components/admin/InterestManager";
+import { AdministratorManager } from "@/components/admin/AdministratorManager";
 import { AdminAccount } from "@/components/admin/AdminAccount";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
@@ -487,6 +488,7 @@ function AdminDashboard() {
             <TabsTrigger value="interesse">Contatti commerciali</TabsTrigger>
             <TabsTrigger value="richieste">Richieste ({richieste.length})</TabsTrigger>
             <TabsTrigger value="sostenitori">Piani clienti</TabsTrigger>
+            <TabsTrigger value="amministratori">Amministratori</TabsTrigger>
             <TabsTrigger value="account">Il mio account</TabsTrigger>
           </TabsList>
           <TabsContent value="clienti"><ClientRegistrations clients={sostenitori} /></TabsContent>
@@ -495,6 +497,7 @@ function AdminDashboard() {
           <TabsContent value="box"><CatalogManager key={`box-${refresh}`} table="bundle"/></TabsContent>
           <TabsContent value="mese"><CatalogManager key={`mese-${refresh}`} table="prodotto_del_mese"/></TabsContent>
           <TabsContent value="interesse"><InterestManager key={refresh}/></TabsContent>
+          <TabsContent value="amministratori"><AdministratorManager /></TabsContent>
           <TabsContent value="account"><AdminAccount email={email}/></TabsContent>
           <TabsContent value="candidature">
             <h2 className="font-serif text-2xl font-bold text-brown">Iscrizioni delle aziende</h2>

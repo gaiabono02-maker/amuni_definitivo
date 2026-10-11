@@ -126,6 +126,14 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.hash.slice(1));
+    const type = params.get("type");
+    // Old emails can redirect to the Site URL instead of a specific page.
+    if ((type === "recovery" || type === "invite") && window.location.pathname !== "/admin/reset-password") {
+      window.location.replace(`/admin/reset-password${window.location.search}${window.location.hash}`);
+    }
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>

@@ -100,8 +100,16 @@ Accesso: https://amuni-sicilia.vercel.app/admin/login. Solo gli account con ruol
 - **Iscrizioni aziende**: candidature ricevute dal modulo pubblico, ricerca, filtro stato, esportazione CSV e aggiornamento della valutazione.
 - **Aggiorna dati** ricarica le nuove iscrizioni; l’orario dell’ultimo aggiornamento è visibile nel pannello.
 - **Il mio account** permette di cambiare la password. Dalla pagina di accesso, **Password dimenticata?** invia un link di recupero all’indirizzo dell’account.
+- **Amministratori** elenca gli account abilitati e permette di aggiungere un indirizzo email. Gli account esistenti conservano la propria password; quelli nuovi ricevono un invito personale per impostarla. Le operazioni sono autorizzate sul server prima di usare la chiave di servizio. Un errore di invio viene segnalato senza dichiarare la consegna riuscita.
 - I pulsanti **Vedi ordini**, **Vedi persone iscritte** e **Vedi aziende iscritte** aprono direttamente gli elenchi principali.
 
 I profili vengono creati dal trigger `on_auth_user_created`; le candidature aziendali sono salvate in `iscrizioni`. Gli elenchi vengono letti a blocchi ordinati e mostrati su pagine da 20, senza fermarsi al limite predefinito dell’API.
 
 Verifica della lettura paginata: `node --test scripts/admin-pagination.test.mjs`.
+
+### Recupero password e inviti amministratori
+
+Pagina pubblica: https://amuni-sicilia.vercel.app/admin/recupera-password.
+Supabase autorizza ancora il dominio `https://amuni-definitivo.vercel.app`: è un alias dello stesso deployment e viene usato per `/admin/reset-password`. Mantenere entrambi gli alias collegati a ogni pubblicazione finché la configurazione Auth non viene aggiornata. I vecchi link diretti alla home vengono inoltrati alla pagina di impostazione password conservando il frammento di autenticazione.
+
+Verifica permessi e inviti senza email reali: `node --test scripts/admin-users.test.mjs`.

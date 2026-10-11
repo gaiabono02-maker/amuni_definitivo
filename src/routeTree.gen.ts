@@ -15,6 +15,8 @@ import { Route as ProfiloRouteImport } from './routes/profilo'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
+import { Route as AdminRecuperaPasswordRouteImport } from './routes/admin.recupera-password'
+import { Route as AdminResetPasswordRouteImport } from './routes/admin.reset-password'
 import { Route as ApiNotifyStatoRouteImport } from './routes/api/notify-stato'
 import { Route as AziendeSlugRouteImport } from './routes/aziende.$slug'
 import { Route as AziendeSlugAdminRouteImport } from './routes/aziende.$slug.admin'
@@ -49,6 +51,16 @@ const AdminLoginRoute = AdminLoginRouteImport.update({
   path: '/admin/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRecuperaPasswordRoute = AdminRecuperaPasswordRouteImport.update({
+  id: '/admin/recupera-password',
+  path: '/admin/recupera-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminResetPasswordRoute = AdminResetPasswordRouteImport.update({
+  id: '/admin/reset-password',
+  path: '/admin/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiNotifyStatoRoute = ApiNotifyStatoRouteImport.update({
   id: '/api/notify-stato',
   path: '/api/notify-stato',
@@ -71,6 +83,8 @@ export interface FileRoutesByFullPath {
   '/profilo': typeof ProfiloRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/recupera-password': typeof AdminRecuperaPasswordRoute
+  '/admin/reset-password': typeof AdminResetPasswordRoute
   '/api/notify-stato': typeof ApiNotifyStatoRoute
   '/aziende/$slug': typeof AziendeSlugRouteWithChildren
   '/admin/': typeof AdminIndexRoute
@@ -82,6 +96,8 @@ export interface FileRoutesByTo {
   '/profilo': typeof ProfiloRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/recupera-password': typeof AdminRecuperaPasswordRoute
+  '/admin/reset-password': typeof AdminResetPasswordRoute
   '/api/notify-stato': typeof ApiNotifyStatoRoute
   '/aziende/$slug': typeof AziendeSlugRouteWithChildren
   '/admin': typeof AdminIndexRoute
@@ -94,6 +110,8 @@ export interface FileRoutesById {
   '/profilo': typeof ProfiloRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/recupera-password': typeof AdminRecuperaPasswordRoute
+  '/admin/reset-password': typeof AdminResetPasswordRoute
   '/api/notify-stato': typeof ApiNotifyStatoRoute
   '/aziende/$slug': typeof AziendeSlugRouteWithChildren
   '/admin/': typeof AdminIndexRoute
@@ -107,6 +125,8 @@ export interface FileRouteTypes {
     | '/profilo'
     | '/sitemap.xml'
     | '/admin/login'
+    | '/admin/recupera-password'
+    | '/admin/reset-password'
     | '/api/notify-stato'
     | '/aziende/$slug'
     | '/admin/'
@@ -118,6 +138,8 @@ export interface FileRouteTypes {
     | '/profilo'
     | '/sitemap.xml'
     | '/admin/login'
+    | '/admin/recupera-password'
+    | '/admin/reset-password'
     | '/api/notify-stato'
     | '/aziende/$slug'
     | '/admin'
@@ -129,6 +151,8 @@ export interface FileRouteTypes {
     | '/profilo'
     | '/sitemap.xml'
     | '/admin/login'
+    | '/admin/recupera-password'
+    | '/admin/reset-password'
     | '/api/notify-stato'
     | '/aziende/$slug'
     | '/admin/'
@@ -141,6 +165,8 @@ export interface RootRouteChildren {
   ProfiloRoute: typeof ProfiloRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   AdminLoginRoute: typeof AdminLoginRoute
+  AdminRecuperaPasswordRoute: typeof AdminRecuperaPasswordRoute
+  AdminResetPasswordRoute: typeof AdminResetPasswordRoute
   ApiNotifyStatoRoute: typeof ApiNotifyStatoRoute
   AziendeSlugRoute: typeof AziendeSlugRouteWithChildren
   AdminIndexRoute: typeof AdminIndexRoute
@@ -190,6 +216,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/recupera-password': {
+      id: '/admin/recupera-password'
+      path: '/admin/recupera-password'
+      fullPath: '/admin/recupera-password'
+      preLoaderRoute: typeof AdminRecuperaPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/reset-password': {
+      id: '/admin/reset-password'
+      path: '/admin/reset-password'
+      fullPath: '/admin/reset-password'
+      preLoaderRoute: typeof AdminResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/notify-stato': {
       id: '/api/notify-stato'
       path: '/api/notify-stato'
@@ -232,6 +272,8 @@ const rootRouteChildren: RootRouteChildren = {
   ProfiloRoute: ProfiloRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   AdminLoginRoute: AdminLoginRoute,
+  AdminRecuperaPasswordRoute: AdminRecuperaPasswordRoute,
+  AdminResetPasswordRoute: AdminResetPasswordRoute,
   ApiNotifyStatoRoute: ApiNotifyStatoRoute,
   AziendeSlugRoute: AziendeSlugRouteWithChildren,
   AdminIndexRoute: AdminIndexRoute,
