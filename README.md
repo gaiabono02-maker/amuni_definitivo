@@ -4,7 +4,7 @@ La copia di lavoro è questa cartella, DEFINITIVO. Tutte le modifiche e i deploy
 
 Sito pubblicato: https://amuni-sicilia.vercel.app
 Repository: https://github.com/gaiabono02-maker/amuni_definitivo
-Progetto Vercel: `amuni/amuni-definitivo`.
+Progetto Vercel: `amuni/amuni` (rinominato da `amuni-definitivo`).
 
 Il primo deploy in produzione è stato completato l’11 settembre 2026 tramite Vercel CLI. Le sette variabili Supabase sono configurate in Production e Preview; Site URL e redirect Supabase includono il dominio pubblico e localhost:8080.
 La connessione automatica GitHub → Vercel è in attesa dell’installazione dell’app GitHub Vercel per questa repository. Dopo l’autorizzazione, eseguire `vercel git connect https://github.com/gaiabono02-maker/amuni_definitivo.git --yes` da questa cartella. Nel frattempo è possibile pubblicare con `vercel --prod`.
@@ -110,6 +110,6 @@ Verifica della lettura paginata: `node --test scripts/admin-pagination.test.mjs`
 ### Recupero password e inviti amministratori
 
 Pagina pubblica: https://amuni-sicilia.vercel.app/admin/recupera-password.
-Supabase autorizza ancora il dominio `https://amuni-definitivo.vercel.app`: è un alias dello stesso deployment e viene usato per `/admin/reset-password`. Mantenere entrambi gli alias collegati a ogni pubblicazione finché la configurazione Auth non viene aggiornata. I vecchi link diretti alla home vengono inoltrati alla pagina di impostazione password conservando il frammento di autenticazione.
+Supabase autorizza ancora il dominio `https://amuni-definitivo.vercel.app`: è un dominio pubblico aggiuntivo dello stesso progetto e viene usato per `/admin/reset-password`. Mantenere entrambi gli alias collegati a ogni pubblicazione finché la configurazione Auth non viene aggiornata. I vecchi link diretti alla home vengono inoltrati alla pagina di impostazione password conservando il frammento di autenticazione.
 
 Verifica permessi e inviti senza email reali: `node --test scripts/admin-users.test.mjs`.
