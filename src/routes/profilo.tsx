@@ -1,5 +1,6 @@
 import { registerCustomer } from "@/lib/customer-registration.functions";
 import { customerRegistrationSchema } from "@/lib/customer-registration.schema";
+import { PublicFormNotice } from "@/components/PublicFormNotice";
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import {
@@ -170,7 +171,7 @@ function ProfiloPage() {
     carica();
   }, [carica]);
 
-  const accedi = async (e: React.FormEvent) => {
+  const accedi = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setBusy(true);
     try {
@@ -180,7 +181,7 @@ function ProfiloPage() {
         setStato("loading");
         await carica();
       } else {
-        const parsed = customerRegistrationSchema.safeParse({email, password, nome});
+        const parsed = customerRegistrationSchema.safeParse({email, password, nome, website: new FormData(e.currentTarget).get("website") || ""});
         if (!parsed.success) throw new Error(parsed.error.issues[0].message);
         const result = await registerCustomer({data: parsed.data});
         setPassword("");
@@ -255,11 +256,11 @@ function ProfiloPage() {
             <span className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground">
               <Leaf className="h-6 w-6" />
             </span>
-            <h1 className="font-serif text-2xl font-bold text-brown">Area Sostenitori</h1>
+            <h1 className="font-serif text-2xl font-bold text-brown">Il tuo account</h1>
             <p className="text-sm text-muted-foreground">
               {mode === "login"
-                ? "Accedi per vedere il tuo piano e i tuoi dati."
-                : "Registrati per seguire il tuo abbonamento."}
+                ? "Accedi per gestire il tuo account e i tuoi dati."
+                : "Crea il tuo account per conoscere il progetto e gestire i tuoi dati."}
             </p>
           </div>
           <form onSubmit={accedi} className="space-y-4">
@@ -292,10 +293,12 @@ function ProfiloPage() {
                 placeholder="••••••••"
               />
             </div>
+            {mode === "signup" && <PublicFormNotice />}
             <Button type="submit" className="w-full" disabled={busy}>
               {busy ? "Attendere..." : mode === "login" ? "Accedi" : "Crea account"}
             </Button>
           </form>
+          <a href="/recupera-password" className="mt-3 block text-center text-sm text-primary underline">Password dimenticata?</a>
           <button
             type="button"
             onClick={() => setMode((m) => (m === "login" ? "signup" : "login"))}

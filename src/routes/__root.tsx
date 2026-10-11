@@ -18,16 +18,16 @@ function NotFoundComponent() {
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="text-7xl font-bold text-foreground">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-foreground">Page not found</h2>
+        <h2 className="mt-4 text-xl font-semibold text-foreground">Pagina non trovata</h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          The page you're looking for doesn't exist or has been moved.
+          La pagina che cerchi non esiste oppure è stata spostata.
         </p>
         <div className="mt-6">
           <Link
             to="/"
             className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
-            Go home
+            Torna alla home
           </Link>
         </div>
       </div>
@@ -46,10 +46,10 @@ function ErrorComponent({ error, reset }: { error: unknown; reset: () => void })
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          This page didn't load
+          Impossibile caricare la pagina
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Something went wrong on our end. You can try refreshing or head back home.
+          Si è verificato un errore. Riprova oppure torna alla home.
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button
@@ -59,13 +59,13 @@ function ErrorComponent({ error, reset }: { error: unknown; reset: () => void })
             }}
             className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
-            Try again
+            Riprova
           </button>
           <a
             href="/"
             className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
           >
-            Go home
+            Torna alla home
           </a>
         </div>
       </div>
@@ -79,25 +79,19 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "A.M.U.N.I'" },
-      { name: "description", content: "Website for A.M.U.N.Ì. Sicily, connecting agricultural businesses to foster growth and innovation." },
-      { name: "author", content: "Lovable" },
+      { name: "description", content: "A.M.U.N.Ì. unisce le imprese agricole siciliane e valorizza i prodotti del territorio." },
+      { name: "author", content: "Associazione Forma Mentis OdV" },
       { property: "og:title", content: "A.M.U.N.I'" },
-      { property: "og:description", content: "Website for A.M.U.N.Ì. Sicily, connecting agricultural businesses to foster growth and innovation." },
+      { property: "og:description", content: "A.M.U.N.Ì. unisce le imprese agricole siciliane e valorizza i prodotti del territorio." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
       { name: "twitter:title", content: "A.M.U.N.I'" },
-      { name: "twitter:description", content: "Website for A.M.U.N.Ì. Sicily, connecting agricultural businesses to foster growth and innovation." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/42337d30-c343-49dc-bfc1-de5a40a5aac4/id-preview-3d006ebf--344bed08-c92c-4037-8802-000f6e08613f.lovable.app-1780150099491.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/42337d30-c343-49dc-bfc1-de5a40a5aac4/id-preview-3d006ebf--344bed08-c92c-4037-8802-000f6e08613f.lovable.app-1780150099491.png" },
+      { name: "twitter:description", content: "A.M.U.N.Ì. unisce le imprese agricole siciliane e valorizza i prodotti del territorio." },
+
+
     ],
     links: [
-      { rel: "preconnect", href: "https://fonts.googleapis.com" },
-      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      {
-        rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Inter:wght@300;400;500;600;700&display=swap",
-      },
       {
         rel: "stylesheet",
         href: appCss,
@@ -112,7 +106,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="it">
       <head>
         <HeadContent />
       </head>
@@ -130,8 +124,9 @@ function RootComponent() {
     const params = new URLSearchParams(window.location.hash.slice(1));
     const type = params.get("type");
     // Old emails can redirect to the Site URL instead of a specific page.
-    if ((type === "recovery" || type === "invite") && window.location.pathname !== "/admin/reset-password") {
-      window.location.replace(`/admin/reset-password${window.location.search}${window.location.hash}`);
+    if ((type === "recovery" || type === "invite") && !["/admin/reset-password", "/imposta-password"].includes(window.location.pathname)) {
+      const destination = type === "invite" ? "/admin/reset-password" : "/imposta-password";
+      window.location.replace(`${destination}${window.location.search}${window.location.hash}`);
     }
   }, []);
 

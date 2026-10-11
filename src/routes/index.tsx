@@ -14,6 +14,7 @@ import {
   Heart,
   Check,
 } from "lucide-react";
+import { SITE_URL } from "@/lib/site";
 import { Navbar } from "@/components/Navbar";
 import { Reveal } from "@/components/Reveal";
 import { Button } from "@/components/ui/button";
@@ -23,7 +24,6 @@ import {
 import { CartDrawer } from "@/components/CartDrawer";
 import { BlogSection } from "@/components/BlogSection";
 import { BottegaFeatures } from "@/components/BottegaFeatures";
-import { toast } from "sonner";
 import { AnimatedCounter } from "@/components/AnimatedCounter";
 import { SicilyMap } from "@/components/SicilyMap";
 import { SeasonalCalendar } from "@/components/SeasonalCalendar";
@@ -47,9 +47,11 @@ export const Route = createFileRoute("/")({
         content: "Connettere le imprese agricole siciliane per crescere insieme.",
       },
       { property: "og:type", content: "website" },
-      { property: "og:image", content: heroImg },
+      { property: "og:image", content: `${SITE_URL}${heroImg}` },
+      { property: "og:url", content: SITE_URL },
+      { property: "og:locale", content: "it_IT" },
     ],
-    links: [{ rel: "canonical", href: "/" }],
+    links: [{ rel: "canonical", href: `${SITE_URL}/` }],
   }),
   component: Index,
 });
@@ -86,12 +88,9 @@ const pianiSostenitore: PianoSostenitore[] = [
     nome: "Sostenitore",
     descrizione: "Per chi crede nel progetto e vuole sostenere la nostra rete.",
     benefici: [
-      "Newsletter esclusiva del network",
-      "Inviti agli eventi della rete",
-      "Nome nella pagina dei sostenitori",
-      <span key="box">1 <strong>box degustazione di benvenuto</strong></span>,
-      "Sconto 10% sulla Bottega",
-      "Accesso anticipato ai nuovi prodotti",
+      "Scopri come contribuire alla crescita del progetto",
+      "Entra in contatto con il team A.M.U.N.Ì.",
+      "Ricevi informazioni sulle modalità di sostegno",
     ],
     evidenza: true,
   },
@@ -181,8 +180,8 @@ function Index() {
               <div className="mt-4 h-1 w-16 rounded-full bg-gold" />
               <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
                 A.M.U.N.Ì. è un'iniziativa di networking dedicata alle piccole e medie imprese
-                agricole siciliane, attiva da <strong className="text-foreground">marzo a giugno 2026</strong>{" "}
-                nelle province di <strong className="text-foreground">Palermo e Agrigento</strong>.
+                agricole siciliane. La piattaforma è in fase di lancio e raccoglie le adesioni
+                delle imprese del territorio, a partire dalle province di <strong className="text-foreground">Palermo e Agrigento</strong>.
               </p>
               <p className="mt-4 text-lg leading-relaxed text-muted-foreground">
                 Il progetto è finanziato dall'Avviso <em>"Sicilia che piace – Associazioni"</em> della
@@ -459,7 +458,7 @@ function Index() {
             <p className="mt-2">
               © {new Date().getFullYear()} Associazione Forma Mentis OdV. Tutti i diritti riservati.
               {" · "}
-              <a href="/admin/login" className="hover:text-primary">Area amministratore</a>
+              <a href="/privacy" className="hover:text-primary">Privacy</a>{" · "}<a href="/admin/login" className="hover:text-primary">Area amministratore</a>
             </p>
           </div>
         </div>
@@ -501,6 +500,7 @@ function SostenitoriSection() {
                 <p className={`mt-3 text-sm leading-relaxed ${p.evidenza ? "text-primary-foreground/85" : "text-muted-foreground"}`}>
                   {p.descrizione}
                 </p>
+                <p className="mt-4 rounded-lg border border-gold/40 p-3 text-sm text-cream">Il piano è in preparazione. Pagamenti e vantaggi dedicati saranno disponibili dopo l’attivazione.</p>
                 <ul className="mt-6 flex-1 space-y-3">
                   {p.benefici.map((b, bi) => (
                     <li key={bi} className="flex items-start gap-2.5 text-sm">
@@ -513,11 +513,9 @@ function SostenitoriSection() {
                   size="lg"
                   variant="default"
                   className="mt-8 w-full"
-                  onClick={() =>
-                    toast.info("I pagamenti saranno presto disponibili. Grazie per il tuo interesse!")
-                  }
+                  asChild
                 >
-                  Scegli {p.nome}
+                  <a href="mailto:amunirichieste@gmail.com?subject=Informazioni%20sul%20piano%20Sostenitore">Chiedi informazioni</a>
                 </Button>
               </div>
             </Reveal>
@@ -525,7 +523,7 @@ function SostenitoriSection() {
         </div>
 
         <p className="mt-8 text-center text-sm text-muted-foreground">
-          I pagamenti online saranno attivati a breve. Per sostenerci subito,{" "}
+          I pagamenti online non sono ancora attivi. Per conoscere le modalità di sostegno,{" "}
           <a href="#contatti" className="font-semibold text-primary hover:underline">contattaci</a>.
         </p>
       </div>

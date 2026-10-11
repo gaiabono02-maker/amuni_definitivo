@@ -1,2 +1,9 @@
 User-agent: *
 Allow: /
+Disallow: /api/
+Disallow: /admin
+Disallow: /profilo
+Disallow: /recupera-password
+Disallow: /imposta-password
+
+Sitemap: https://amuni-sicilia.vercel.app/sitemap.xml

@@ -1,3 +1,5 @@
+import { submitCartRequest } from "@/lib/public-requests.functions";
+import { PublicFormNotice } from "@/components/PublicFormNotice";
 import { X, Plus, Minus, Trash2, ShoppingBag, ArrowLeft } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -26,21 +28,11 @@ export function CartDrawer() {
     close();
   };
 
-  const handleCheckout = async (e: React.FormEvent) => {
+  const handleCheckout = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const { error } = await supabase.from("acquirenti").insert({
-        nome,
-        email,
-        totale: total,
-        articoli: items.map((i) => ({
-          nome: i.nome,
-          qty: i.qty,
-          prezzo: i.prezzo,
-        })),
-      });
-      if (error) throw error;
+      await submitCartRequest({data: {nome, email, website: String(new FormData(e.currentTarget).get("website") || ""), items: items.map(item => ({id: item.id, qty: item.qty}))}});
       toast.success("Registrazione completata! Ti contatteremo per l'ordine.");
       clear();
       reset();
@@ -71,7 +63,7 @@ export function CartDrawer() {
         <div className="flex items-center justify-between border-b border-border px-6 py-5">
           <h2 className="flex items-center gap-2 font-serif text-xl font-bold text-brown">
             <ShoppingBag className="h-5 w-5 text-primary" />{" "}
-            {checkout ? "Completa l'ordine" : "Il tuo carrello"}
+            {checkout ? "Richiedi il tuo ordine" : "Il tuo carrello"}
           </h2>
           <button aria-label="Chiudi carrello" onClick={handleClose} className="text-brown hover:text-primary">
             <X className="h-6 w-6" />
@@ -123,6 +115,7 @@ export function CartDrawer() {
                 ))}
               </div>
             </div>
+            <PublicFormNotice />
             <div className="border-t border-border px-6 py-5">
               <div className="mb-4 flex items-center justify-between text-lg font-bold text-brown">
                 <span>Totale</span>
@@ -180,7 +173,7 @@ export function CartDrawer() {
               className="w-full"
               onClick={() => setCheckout(true)}
             >
-              Procedi al checkout
+              Invia richiesta d’ordine
             </Button>
             <p className="mt-3 text-center text-xs text-muted-foreground">
               Lascia i tuoi dati per essere ricontattato.

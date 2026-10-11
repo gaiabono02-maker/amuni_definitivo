@@ -4,6 +4,8 @@ import { customerRegistrationSchema } from "./customer-registration.schema";
 export const registerCustomer = createServerFn({method: "POST"})
   .validator((input: unknown) => customerRegistrationSchema.parse(input))
   .handler(async ({data}) => {
+    const { guardPublicForm } = await import("./public-form-guard.server");
+    await guardPublicForm(data.website, data.email, "profili");
     const {createClient} = await import("@supabase/supabase-js");
     const {registerCustomerAccount} = await import("./customer-registration.server");
     const client = createClient(

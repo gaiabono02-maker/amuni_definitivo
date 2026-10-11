@@ -2,8 +2,10 @@ import { createServerFn } from "@tanstack/react-start";
 import { richiestaSchema } from "./richiesta.schema";
 
 export const submitProductRequest = createServerFn({ method: "POST" })
-  .inputValidator((data: unknown) => richiestaSchema.parse(data))
+  .validator((data: unknown) => richiestaSchema.parse(data))
   .handler(async ({ data }) => {
+    const { guardPublicForm } = await import("./public-form-guard.server");
+    await guardPublicForm(data.website, data.email, "richieste_prodotti");
     const { createClient } = await import("@supabase/supabase-js");
     const { sendProductRequestEmails } = await import("./richiesta-email.server");
     const supabase = createClient(
@@ -16,7 +18,7 @@ export const submitProductRequest = createServerFn({ method: "POST" })
       id,
       nome_prodotto: data.nome_prodotto,
       categoria: data.categoria || "Altro",
-      email: data.email,
+      email: data.email.toLowerCase(),
       note: data.note || "",
     });
     if (error) throw new Error("Impossibile salvare la richiesta. Riprova più tardi.");

@@ -10,14 +10,18 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ImpostaPasswordRouteImport } from './routes/imposta-password'
 import { Route as IscrizioneImpresaRouteImport } from './routes/iscrizione-impresa'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ProfiloRouteImport } from './routes/profilo'
+import { Route as RecuperaPasswordRouteImport } from './routes/recupera-password'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminRecuperaPasswordRouteImport } from './routes/admin.recupera-password'
 import { Route as AdminResetPasswordRouteImport } from './routes/admin.reset-password'
 import { Route as ApiNotifyStatoRouteImport } from './routes/api/notify-stato'
+import { Route as ApiRetentionRouteImport } from './routes/api/retention'
 import { Route as AziendeSlugRouteImport } from './routes/aziende.$slug'
 import { Route as AziendeSlugAdminRouteImport } from './routes/aziende.$slug.admin'
 
@@ -26,14 +30,29 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ImpostaPasswordRoute = ImpostaPasswordRouteImport.update({
+  id: '/imposta-password',
+  path: '/imposta-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IscrizioneImpresaRoute = IscrizioneImpresaRouteImport.update({
   id: '/iscrizione-impresa',
   path: '/iscrizione-impresa',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProfiloRoute = ProfiloRouteImport.update({
   id: '/profilo',
   path: '/profilo',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RecuperaPasswordRoute = RecuperaPasswordRouteImport.update({
+  id: '/recupera-password',
+  path: '/recupera-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -66,6 +85,11 @@ const ApiNotifyStatoRoute = ApiNotifyStatoRouteImport.update({
   path: '/api/notify-stato',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiRetentionRoute = ApiRetentionRouteImport.update({
+  id: '/api/retention',
+  path: '/api/retention',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AziendeSlugRoute = AziendeSlugRouteImport.update({
   id: '/aziende/$slug',
   path: '/aziende/$slug',
@@ -79,26 +103,34 @@ const AziendeSlugAdminRoute = AziendeSlugAdminRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/imposta-password': typeof ImpostaPasswordRoute
   '/iscrizione-impresa': typeof IscrizioneImpresaRoute
+  '/privacy': typeof PrivacyRoute
   '/profilo': typeof ProfiloRoute
+  '/recupera-password': typeof RecuperaPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/recupera-password': typeof AdminRecuperaPasswordRoute
   '/admin/reset-password': typeof AdminResetPasswordRoute
   '/api/notify-stato': typeof ApiNotifyStatoRoute
+  '/api/retention': typeof ApiRetentionRoute
   '/aziende/$slug': typeof AziendeSlugRouteWithChildren
   '/admin/': typeof AdminIndexRoute
   '/aziende/$slug/admin': typeof AziendeSlugAdminRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/imposta-password': typeof ImpostaPasswordRoute
   '/iscrizione-impresa': typeof IscrizioneImpresaRoute
+  '/privacy': typeof PrivacyRoute
   '/profilo': typeof ProfiloRoute
+  '/recupera-password': typeof RecuperaPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/recupera-password': typeof AdminRecuperaPasswordRoute
   '/admin/reset-password': typeof AdminResetPasswordRoute
   '/api/notify-stato': typeof ApiNotifyStatoRoute
+  '/api/retention': typeof ApiRetentionRoute
   '/aziende/$slug': typeof AziendeSlugRouteWithChildren
   '/admin': typeof AdminIndexRoute
   '/aziende/$slug/admin': typeof AziendeSlugAdminRoute
@@ -106,13 +138,17 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/imposta-password': typeof ImpostaPasswordRoute
   '/iscrizione-impresa': typeof IscrizioneImpresaRoute
+  '/privacy': typeof PrivacyRoute
   '/profilo': typeof ProfiloRoute
+  '/recupera-password': typeof RecuperaPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/recupera-password': typeof AdminRecuperaPasswordRoute
   '/admin/reset-password': typeof AdminResetPasswordRoute
   '/api/notify-stato': typeof ApiNotifyStatoRoute
+  '/api/retention': typeof ApiRetentionRoute
   '/aziende/$slug': typeof AziendeSlugRouteWithChildren
   '/admin/': typeof AdminIndexRoute
   '/aziende/$slug/admin': typeof AziendeSlugAdminRoute
@@ -121,39 +157,51 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/imposta-password'
     | '/iscrizione-impresa'
+    | '/privacy'
     | '/profilo'
+    | '/recupera-password'
     | '/sitemap.xml'
     | '/admin/login'
     | '/admin/recupera-password'
     | '/admin/reset-password'
     | '/api/notify-stato'
+    | '/api/retention'
     | '/aziende/$slug'
     | '/admin/'
     | '/aziende/$slug/admin'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/imposta-password'
     | '/iscrizione-impresa'
+    | '/privacy'
     | '/profilo'
+    | '/recupera-password'
     | '/sitemap.xml'
     | '/admin/login'
     | '/admin/recupera-password'
     | '/admin/reset-password'
     | '/api/notify-stato'
+    | '/api/retention'
     | '/aziende/$slug'
     | '/admin'
     | '/aziende/$slug/admin'
   id:
     | '__root__'
     | '/'
+    | '/imposta-password'
     | '/iscrizione-impresa'
+    | '/privacy'
     | '/profilo'
+    | '/recupera-password'
     | '/sitemap.xml'
     | '/admin/login'
     | '/admin/recupera-password'
     | '/admin/reset-password'
     | '/api/notify-stato'
+    | '/api/retention'
     | '/aziende/$slug'
     | '/admin/'
     | '/aziende/$slug/admin'
@@ -161,13 +209,17 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ImpostaPasswordRoute: typeof ImpostaPasswordRoute
   IscrizioneImpresaRoute: typeof IscrizioneImpresaRoute
+  PrivacyRoute: typeof PrivacyRoute
   ProfiloRoute: typeof ProfiloRoute
+  RecuperaPasswordRoute: typeof RecuperaPasswordRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminRecuperaPasswordRoute: typeof AdminRecuperaPasswordRoute
   AdminResetPasswordRoute: typeof AdminResetPasswordRoute
   ApiNotifyStatoRoute: typeof ApiNotifyStatoRoute
+  ApiRetentionRoute: typeof ApiRetentionRoute
   AziendeSlugRoute: typeof AziendeSlugRouteWithChildren
   AdminIndexRoute: typeof AdminIndexRoute
 }
@@ -181,6 +233,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/imposta-password': {
+      id: '/imposta-password'
+      path: '/imposta-password'
+      fullPath: '/imposta-password'
+      preLoaderRoute: typeof ImpostaPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/iscrizione-impresa': {
       id: '/iscrizione-impresa'
       path: '/iscrizione-impresa'
@@ -188,11 +247,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IscrizioneImpresaRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/profilo': {
       id: '/profilo'
       path: '/profilo'
       fullPath: '/profilo'
       preLoaderRoute: typeof ProfiloRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recupera-password': {
+      id: '/recupera-password'
+      path: '/recupera-password'
+      fullPath: '/recupera-password'
+      preLoaderRoute: typeof RecuperaPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sitemap.xml': {
@@ -237,6 +310,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiNotifyStatoRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/retention': {
+      id: '/api/retention'
+      path: '/api/retention'
+      fullPath: '/api/retention'
+      preLoaderRoute: typeof ApiRetentionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/aziende/$slug': {
       id: '/aziende/$slug'
       path: '/aziende/$slug'
@@ -268,13 +348,17 @@ const AziendeSlugRouteWithChildren = AziendeSlugRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ImpostaPasswordRoute: ImpostaPasswordRoute,
   IscrizioneImpresaRoute: IscrizioneImpresaRoute,
+  PrivacyRoute: PrivacyRoute,
   ProfiloRoute: ProfiloRoute,
+  RecuperaPasswordRoute: RecuperaPasswordRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminRecuperaPasswordRoute: AdminRecuperaPasswordRoute,
   AdminResetPasswordRoute: AdminResetPasswordRoute,
   ApiNotifyStatoRoute: ApiNotifyStatoRoute,
+  ApiRetentionRoute: ApiRetentionRoute,
   AziendeSlugRoute: AziendeSlugRouteWithChildren,
   AdminIndexRoute: AdminIndexRoute,
 }

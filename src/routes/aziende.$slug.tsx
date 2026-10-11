@@ -1,3 +1,5 @@
+import { submitProductInterest } from "@/lib/public-requests.functions";
+import { PublicFormNotice } from "@/components/PublicFormNotice";
 import { fetchShowcaseCompany, fetchShowcaseCompanyProducts, isDemoCompany, isDemoProduct } from "@/lib/showcase";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState, type FormEvent } from "react";
@@ -282,21 +284,12 @@ function InteresseDialog({
       return;
     }
     setLoading(true);
-    const { error } = await supabase.from("richieste_interesse").insert({
-      azienda: azienda.nome,
-      azienda_slug: azienda.slug,
-      prodotto_id: prodotto.id,
-      prodotto_nome: prodotto.nome,
-      nome_cliente: parsed.data.nome_cliente,
-      email_cliente: parsed.data.email_cliente,
-      telefono_cliente: parsed.data.telefono_cliente ?? null,
-      messaggio: parsed.data.messaggio ?? "",
-    });
-    setLoading(false);
-    if (error) {
-      toast.error("Si è verificato un errore. Riprova più tardi.");
+    try {
+      await submitProductInterest({data: {...parsed.data, prodotto_id: prodotto.id, website: String(fd.get("website") || "")}});
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Si è verificato un errore. Riprova più tardi.");
       return;
-    }
+    } finally { setLoading(false); }
     toast.success("Richiesta inviata! L'azienda ti contatterà presto.");
     onClose();
   };
@@ -340,6 +333,7 @@ function InteresseDialog({
             </label>
             <Textarea id="messaggio" name="messaggio" rows={3} placeholder="Quantità desiderata, domande..." />
           </div>
+          <PublicFormNotice shareWithCompany />
           <DialogFooter>
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "Invio in corso..." : "Invia richiesta"}

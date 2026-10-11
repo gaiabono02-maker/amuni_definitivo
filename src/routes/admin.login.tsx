@@ -16,7 +16,7 @@ export const Route = createFileRoute("/admin/login")({
   component: () => <AdminLogin />,
 });
 
-export function AdminLogin({ initialMode = "login" }: { initialMode?: "login" | "forgot" | "reset" }) {
+export function AdminLogin({ initialMode = "login", adminOnly = true }: { initialMode?: "login" | "forgot" | "reset"; adminOnly?: boolean }) {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -39,8 +39,10 @@ export function AdminLogin({ initialMode = "login" }: { initialMode?: "login" | 
         try {
           const { data, error } = await supabase.auth.getUser();
           if (error || !data.user) throw new Error("Il link non è valido oppure è scaduto. Richiedi un nuovo link di recupero.");
-          const { data: role, error: roleError } = await supabase.from("user_roles").select("role").eq("user_id", data.user.id).eq("role", "admin").maybeSingle();
-          if (roleError || !role) throw new Error("Questo account non ha i permessi di amministratore.");
+          if (adminOnly) {
+            const { data: role, error: roleError } = await supabase.from("user_roles").select("role").eq("user_id", data.user.id).eq("role", "admin").maybeSingle();
+            if (roleError || !role) throw new Error("Questo account non ha i permessi di amministratore.");
+          }
         } catch (err) {
           if (active) setLinkError(err instanceof Error ? err.message : "Impossibile verificare il link. Riprova.");
         } finally {
@@ -56,7 +58,7 @@ export function AdminLogin({ initialMode = "login" }: { initialMode?: "login" | 
       }
     });
     return () => { active = false; data.subscription.unsubscribe(); };
-  }, [initialMode]);
+  }, [initialMode, adminOnly]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,7 +66,7 @@ export function AdminLogin({ initialMode = "login" }: { initialMode?: "login" | 
     try {
       if (mode === "forgot") {
         const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-          redirectTo: passwordRedirectUrl(window.location.origin),
+          redirectTo: passwordRedirectUrl(window.location.origin, adminOnly ? "admin" : "customer"),
         });
         if (error) throw new Error("Impossibile inviare il link. Riprova tra qualche minuto.");
         setSent(true);
@@ -74,12 +76,14 @@ export function AdminLogin({ initialMode = "login" }: { initialMode?: "login" | 
         if (password !== confirm) throw new Error("Le password non coincidono.");
         const { data: userData, error: userError } = await supabase.auth.getUser();
         if (userError || !userData.user) throw new Error("Link scaduto. Richiedi un nuovo link di recupero.");
-        const { data: role, error: roleError } = await supabase.from("user_roles").select("role").eq("user_id", userData.user.id).eq("role", "admin").maybeSingle();
-        if (roleError || !role) throw new Error("Questo account non ha i permessi di amministratore.");
+        if (adminOnly) {
+          const { data: role, error: roleError } = await supabase.from("user_roles").select("role").eq("user_id", userData.user.id).eq("role", "admin").maybeSingle();
+          if (roleError || !role) throw new Error("Questo account non ha i permessi di amministratore.");
+        }
         const { error } = await supabase.auth.updateUser({ password });
         if (error) throw new Error("Impossibile aggiornare la password. Richiedi un nuovo link e riprova.");
         toast.success("Password aggiornata.");
-        navigate({ to: "/admin" });
+        navigate({ to: adminOnly ? "/admin" : "/profilo" });
         return;
       }
       const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
@@ -107,7 +111,7 @@ export function AdminLogin({ initialMode = "login" }: { initialMode?: "login" | 
           </span>
           <h1 className="font-serif text-2xl font-bold text-brown">{mode === "login" ? "Area amministratore" : mode === "forgot" ? "Recupera password" : "Imposta nuova password"}</h1>
           <p className="text-sm text-muted-foreground">
-            {mode === "login" ? "Accedi per vedere ordini, persone e aziende iscritte." : mode === "forgot" ? "Inserisci la tua email amministratore per ricevere il link di recupero." : "Scegli una nuova password di almeno 12 caratteri."}
+            {mode === "login" ? "Accedi per vedere ordini, persone e aziende iscritte." : mode === "forgot" ? "Inserisci l’email del tuo account per ricevere il link di recupero." : "Scegli una nuova password di almeno 12 caratteri."}
           </p>
         </div>
 
@@ -142,9 +146,9 @@ export function AdminLogin({ initialMode = "login" }: { initialMode?: "login" | 
             {loading ? "Operazione in corso…" : mode === "login" ? "Accedi" : mode === "forgot" ? "Invia link di recupero" : "Salva password e accedi"}
           </Button>
         </form>}
-        <Button variant="link" className="mt-3 w-full" disabled={loading} onClick={() => navigate({to: mode === "login" || linkError ? "/admin/recupera-password" : "/admin/login"})}>{linkError ? "Richiedi un nuovo link" : mode === "login" ? "Password dimenticata?" : "Torna all’accesso"}</Button>
+        <Button variant="link" className="mt-3 w-full" disabled={loading} onClick={() => navigate({to: mode === "login" || linkError ? (adminOnly ? "/admin/recupera-password" : "/recupera-password") : (adminOnly ? "/admin/login" : "/profilo")})}>{linkError ? "Richiedi un nuovo link" : mode === "login" ? "Password dimenticata?" : "Torna all’accesso"}</Button>
 
-        <p className="mt-5 text-center text-xs text-muted-foreground">Accesso riservato agli amministratori autorizzati.</p>
+        {adminOnly && <p className="mt-5 text-center text-xs text-muted-foreground">Accesso riservato agli amministratori autorizzati.</p>}
         <a href="/" className="mt-4 block text-center text-sm text-primary hover:underline">Torna al sito</a>
       </div>
     </div>

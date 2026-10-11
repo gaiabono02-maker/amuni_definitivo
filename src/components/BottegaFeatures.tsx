@@ -12,6 +12,8 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { submitProductInterest } from "@/lib/public-requests.functions";
+import { PublicFormNotice } from "@/components/PublicFormNotice";
 import { Reveal } from "@/components/Reveal";
 
 import { toast } from "sonner";
@@ -64,21 +66,12 @@ function InteresseDialog({
       return;
     }
     setLoading(true);
-    const { error } = await supabase.from("richieste_interesse").insert({
-      azienda: prodotto.azienda,
-      azienda_slug: slug,
-      prodotto_id: prodotto.id,
-      prodotto_nome: prodotto.nome,
-      nome_cliente: parsed.data.nome_cliente,
-      email_cliente: parsed.data.email_cliente,
-      telefono_cliente: parsed.data.telefono_cliente ?? null,
-      messaggio: parsed.data.messaggio ?? "",
-    });
-    setLoading(false);
-    if (error) {
-      toast.error("Si è verificato un errore. Riprova più tardi.");
+    try {
+      await submitProductInterest({data: {...parsed.data, prodotto_id: prodotto.id, website: String(fd.get("website") || "")}});
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Si è verificato un errore. Riprova più tardi.");
       return;
-    }
+    } finally { setLoading(false); }
     toast.success("Richiesta inviata! L'impresa ti contatterà presto.");
     onClose();
   };
@@ -154,6 +147,7 @@ function InteresseDialog({
             rows={3}
             placeholder="Quantità desiderata, domande..."
           />
+          <PublicFormNotice shareWithCompany />
           <DialogFooter>
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "Invio in corso..." : "Invia richiesta"}
@@ -296,6 +290,7 @@ function RichiestaProdotto() {
     const form = e.currentTarget;
     const fd = new FormData(form);
     const parsed = richiestaSchema.safeParse({
+      website: fd.get("website") || "",
       nome_prodotto: fd.get("nome_prodotto"),
       categoria: fd.get("categoria") || undefined,
       email: fd.get("email"),
@@ -313,8 +308,8 @@ function RichiestaProdotto() {
         ? "Richiesta inviata! Ti abbiamo inviato un'email di conferma. Ti ricontatteremo a breve."
         : "Richiesta ricevuta! Ti ricontatteremo a breve.");
       if (!emailSent) toast.info("Non è stato possibile inviare l'email di conferma, ma la tua richiesta è stata salvata.");
-    } catch {
-      toast.error("Si è verificato un errore. Riprova più tardi.");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Si è verificato un errore. Riprova più tardi.");
     } finally {
       setLoading(false);
     }
@@ -338,6 +333,7 @@ function RichiestaProdotto() {
         </div>
         <Input name="email" type="email" required placeholder="La tua email" />
         <Textarea name="note" rows={3} placeholder="Note (facoltative)" />
+        <PublicFormNotice />
         <Button type="submit" className="w-full" disabled={loading}>
           {loading ? "Invio in corso..." : "Invia una richiesta"}
         </Button>

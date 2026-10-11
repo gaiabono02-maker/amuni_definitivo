@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { iscrizioneSchema } from "@/lib/iscrizione.schema";
 import { submitApplication } from "@/lib/iscrizione.functions";
+import { PublicFormNotice } from "@/components/PublicFormNotice";
 import { province } from "@/data/network";
 
 export function CompanyApplicationForm() {
@@ -15,6 +16,7 @@ export function CompanyApplicationForm() {
     const form = e.currentTarget;
     const fd = new FormData(form);
     const parsed = iscrizioneSchema.safeParse({
+      website: fd.get("website") || "",
       nome: fd.get("nome"),
       azienda: fd.get("azienda"),
       settore: fd.get("settore") || undefined,
@@ -37,8 +39,8 @@ export function CompanyApplicationForm() {
       if (!emailSent) {
         toast.info("Candidatura ricevuta. La mail di conferma non è stata inviata, ma ti ricontatteremo a breve.");
       }
-    } catch {
-      toast.error("Si è verificato un errore. Riprova più tardi.");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Si è verificato un errore. Riprova più tardi.");
     } finally {
       setLoading(false);
     }
@@ -61,6 +63,7 @@ export function CompanyApplicationForm() {
                 </div>
                 <Field label="Email" id="email"><Input id="email" name="email" type="email" required placeholder="latua@email.it" /></Field>
                 <Field label="Messaggio" id="messaggio"><Textarea id="messaggio" name="messaggio" rows={4} placeholder="Raccontaci della tua azienda..." /></Field>
+                <PublicFormNotice />
                 <Button type="submit" size="lg" className="w-full" disabled={loading || sent}>
                   {loading ? "Invio in corso..." : sent ? "Candidatura ricevuta" : "Invia la candidatura"}
                 </Button>

@@ -130,3 +130,15 @@ l’email; il tentativo esplicito di invio fallito è separato dal cambio stato.
 
 Usa la stessa configurazione SMTP/Gmail delle altre email.
 Verifiche senza inviare messaggi reali: `node --test scripts/application-decision.test.mjs scripts/admin-users.test.mjs`.
+
+### Privacy e conservazione
+
+L'informativa `/privacy` indica Associazione Forma Mentis OdV, sede legale Favara (AG), e `amunirichieste@gmail.com`. Candidature in attesa o rifiutate e richieste commerciali vengono cancellate dal database dopo 12 mesi dalla ricezione. Account, candidature approvate e schede aziendali non sono cancellati da questa procedura; la chiusura del rapporto viene gestita su richiesta.
+
+Vercel esegue ogni giorno alle 03:00 UTC `/api/retention`, protetta dalla variabile segreta `CRON_SECRET`. Con la stessa autenticazione, `?dry_run=1` restituisce solamente i conteggi senza cancellare. Gli errori producono HTTP 500. Le email nella casella Gmail richiedono una revisione manuale secondo gli stessi criteri; la procedura non cancella messaggi o backup dei fornitori.
+
+I moduli pubblici hanno un campo trappola, limiti temporanei per IP e controlli sulle richieste recenti per email. Sono protezioni di base delle funzioni server: le policy di inserimento anonimo Supabase devono essere ristrette separatamente per impedire l'aggiramento tramite accesso diretto all'API. I caratteri sono ospitati localmente.
+
+Gli utenti possono recuperare la password da `/recupera-password`; il collegamento porta a `/imposta-password`. Il piano sostenitore rimanda a una richiesta di informazioni finché pagamenti e benefici non saranno attivi. La home mantiene le 6 province coperte e mostra solo aziende pubblicate.
+
+Verifiche: `node --test scripts/*.test.mjs`, `npm run typecheck`, `npm run build`.

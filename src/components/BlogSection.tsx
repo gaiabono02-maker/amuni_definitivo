@@ -35,6 +35,7 @@ export function BlogSection() {
       </div>
       {loading && <p role="status" className="text-center">Caricamento delle storie…</p>}
       {errore && <p role="alert" className="text-center">Non è stato possibile caricare le storie. Riprova più tardi.</p>}
+      {!loading && !errore && prodotti.length === 0 && <p className="rounded-2xl border bg-card p-8 text-center text-muted-foreground">Le storie delle imprese e dei prodotti saranno pubblicate con le prime adesioni alla rete.</p>}
       <div className="grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
         {prodotti.filter(p => categoria === "Tutti" || p.categoria === categoria).map(p => {
           const azienda = aziende.find(a => a.nome === p.azienda);
@@ -56,7 +57,7 @@ export function BlogSection() {
       <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-2xl">
         {selected && <>
           <DialogHeader>
-            <p className="text-xs uppercase tracking-widest brand-label">{selected.categoria} · Contenuti dimostrativi</p>
+            <p className="text-xs uppercase tracking-widest brand-label">{selected.categoria}{isDemoProduct(selected) ? " · Contenuti dimostrativi" : ""}</p>
             <DialogTitle className="font-serif text-3xl">{selected.nome}</DialogTitle>
             <DialogDescription>di {selected.azienda}{selected.provincia ? ` · ${selected.provincia}` : ""}</DialogDescription>
           </DialogHeader>

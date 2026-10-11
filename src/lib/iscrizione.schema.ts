@@ -1,6 +1,8 @@
 import { z } from "zod";
+import { publicFormFields } from "./public-form.schema.ts";
 
 export const iscrizioneSchema = z.object({
+  ...publicFormFields,
   nome: z.string().trim().min(1, "Inserisci il tuo nome").max(100),
   azienda: z.string().trim().min(1, "Inserisci il nome dell'azienda").max(150),
   settore: z.string().trim().max(100).optional(),
