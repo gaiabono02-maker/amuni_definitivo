@@ -20,7 +20,7 @@ if(!user) {
  const {data,error}=await db.auth.admin.createUser({email,password,email_confirm:true,user_metadata:{nome:'Gaia Bono'}});
  if(error) throw error;
  user=data.user; created=true;
- await writeFile('/private/tmp/amuni-owner-access.txt',`Area amministratore: https://amuni-definitivo.vercel.app/admin/login\nEmail: ${email}\nPassword iniziale: ${password}\n\nDopo l’accesso, cambia la password nella scheda Il mio account.\n`,{mode:0o600});
+ await writeFile('/private/tmp/amuni-owner-access.txt',`Area amministratore: https://amuni-sicilia.vercel.app/admin/login\nEmail: ${email}\nPassword iniziale: ${password}\n\nDopo l’accesso, cambia la password nella scheda Il mio account.\n`,{mode:0o600});
  users.push(user);
 }
 const {error}=await db.from('user_roles').upsert({user_id:user.id,role:'admin'},{onConflict:'user_id,role'});

@@ -2,7 +2,7 @@
 
 La copia di lavoro è questa cartella, DEFINITIVO. Tutte le modifiche e i deploy successivi partono da qui.
 
-Sito pubblicato: https://amuni-definitivo.vercel.app
+Sito pubblicato: https://amuni-sicilia.vercel.app
 Repository: https://github.com/gaiabono02-maker/amuni_definitivo
 Progetto Vercel: `amuni/amuni-definitivo`.
 
@@ -93,7 +93,7 @@ L'attivazione richiede anche una prova di ricezione reale dopo la pubblicazione.
 
 ## Area amministratore
 
-Accesso: https://amuni-definitivo.vercel.app/admin/login. Solo gli account con ruolo `admin` possono leggere gli elenchi completi; i permessi sono verificati anche dalle policy Supabase.
+Accesso: https://amuni-sicilia.vercel.app/admin/login. Solo gli account con ruolo `admin` possono leggere gli elenchi completi; i permessi sono verificati anche dalle policy Supabase.
 
 - **Ordini**: ordini inviati dal carrello, ricerca per cliente, email, prodotto o identificativo, pagine da 20 ed esportazione CSV dei risultati.
 - **Clienti registrati**: tutti i profili, compresi quelli senza ordini o piano, con ricerca, filtro provincia, scheda contatto e CSV dei risultati filtrati.
