@@ -1,0 +1,108 @@
+import { useEffect, useMemo, useState } from "react";
+import { ArrowRight, MapPin, X } from "lucide-react";
+import type { DbAzienda } from "@/lib/catalog";
+
+type GeoFeature = { geometry: { type: string; coordinates: number[][][] }; properties?: Record<string, unknown> };
+type GeoCollection = { type: "FeatureCollection"; features: GeoFeature[] };
+
+const province = [
+  { nome: "Trapani", codice: "TP", lon: 12.5365, lat: 38.0176, dx: -12, dy: -22 },
+  { nome: "Palermo", codice: "PA", lon: 13.3615, lat: 38.1157, dx: 0, dy: -23 },
+  { nome: "Messina", codice: "ME", lon: 15.554, lat: 38.1938, dx: -12, dy: -22 },
+  { nome: "Agrigento", codice: "AG", lon: 13.5765, lat: 37.3111, dx: -8, dy: 27 },
+  { nome: "Caltanissetta", codice: "CL", lon: 14.0608, lat: 37.4901, dx: 0, dy: -22 },
+  { nome: "Enna", codice: "EN", lon: 14.2794, lat: 37.5676, dx: 0, dy: 27 },
+  { nome: "Catania", codice: "CT", lon: 15.0873, lat: 37.5027, dx: 10, dy: -23 },
+  { nome: "Siracusa", codice: "SR", lon: 15.2866, lat: 37.0755, dx: -4, dy: -22 },
+  { nome: "Ragusa", codice: "RG", lon: 14.7304, lat: 36.9269, dx: 0, dy: 27 },
+] as const;
+
+const normalize = (value: string | null | undefined) => {
+  const v = (value ?? "").trim().toLocaleLowerCase("it");
+  return province.find((p) => p.nome.toLocaleLowerCase("it") === v || p.codice.toLowerCase() === v)?.nome ?? "";
+};
+
+// Proiezione geografica equirettangolare locale: le coordinate sono longitudine/latitudine reali.
+const point = (lon: number, lat: number): [number, number] => [45 + (lon - 12.2) * 195, 42 + (38.45 - lat) * 205];
+const outline = (coords: number[][][]) => coords.map((ring) => ring.map(([lon, lat], i) => {
+  const [x, y] = point(lon, lat);
+  return `${i === 0 ? "M" : "L"}${x.toFixed(2)} ${y.toFixed(2)}`;
+}).join(" ") + " Z").join(" ");
+
+export function SicilyMap({ imprese }: { imprese: DbAzienda[] }) {
+  const [geo, setGeo] = useState<GeoCollection | null>(null);
+  const [error, setError] = useState(false);
+  const [selected, setSelected] = useState<string | null>(null);
+
+  useEffect(() => {
+    let alive = true;
+    fetch("/maps/sicilia.geojson")
+      .then((r) => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
+      .then((data: GeoCollection) => {
+        if (data.type !== "FeatureCollection" || !data.features?.length) throw new Error("GeoJSON non valido");
+        if (alive) setGeo(data);
+      })
+      .catch((e) => { console.error("Errore mappa Sicilia:", e); if (alive) setError(true); });
+    return () => { alive = false; };
+  }, []);
+
+  const byProvince = useMemo(() => {
+    const result: Record<string, DbAzienda[]> = Object.fromEntries(province.map((p) => [p.nome, []]));
+    for (const a of imprese) {
+      const key = normalize(a.provincia);
+      if (key) result[key].push(a);
+    }
+    return result;
+  }, [imprese]);
+  const selectedAziende = selected ? byProvince[selected] ?? [] : [];
+
+  return (
+    <div className="grid items-start gap-8 lg:grid-cols-[1.3fr_1fr]">
+      <div className="rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-6">
+        <p className="mb-2 font-serif text-lg font-bold">La Sicilia di AMUNI</p>
+        <p className="mb-3 text-sm text-muted-foreground">Seleziona una provincia per esplorare il network.</p>
+        {error ? <p role="alert" className="rounded-lg bg-muted p-4 text-sm">Impossibile caricare la mappa geografica.</p> : !geo ? <p className="p-12 text-center text-sm text-muted-foreground">Caricamento mappa…</p> : (
+          <svg viewBox="0 0 800 490" className="h-auto w-full" role="group" aria-label="Mappa geografica interattiva della Sicilia con nove province selezionabili">
+            {geo.features.map((feature, i) => <path key={i} d={outline(feature.geometry.coordinates)} fill="#e6eaf0" stroke="#173f70" strokeWidth="2.5" strokeLinejoin="round" />)}
+            {province.map((p) => {
+              const [x, y] = point(p.lon, p.lat);
+              const active = byProvince[p.nome].length > 0;
+              const isSelected = selected === p.nome;
+              return (
+                <g key={p.codice} role="button" tabIndex={0} aria-label={`${p.nome}, ${byProvince[p.nome].length} aziende`} className="cursor-pointer outline-none" onClick={() => setSelected(p.nome)} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setSelected(p.nome); } }}>
+                  <circle cx={x} cy={y} r={isSelected ? 14 : 11} fill={isSelected ? "#d4af37" : active ? "#173f70" : "#aab3c1"} stroke="white" strokeWidth="3" />
+                  {active && <text x={x} y={y + 4} textAnchor="middle" fill="white" fontSize="11" fontWeight="bold" pointerEvents="none">{byProvince[p.nome].length}</text>}
+                  <text x={x + p.dx} y={y + p.dy} textAnchor="middle" fontSize="14" fontWeight="bold" fill="#173f70" stroke="white" strokeWidth="4" paintOrder="stroke" pointerEvents="none">{p.nome}</text>
+                </g>
+              );
+            })}
+          </svg>
+        )}
+        <div className="mt-3 flex flex-wrap gap-4 border-t border-border pt-4 text-xs text-muted-foreground">
+          <span className="inline-flex items-center gap-2"><span className="h-3 w-3 rounded-full bg-[#173f70]" /> Province con aziende</span>
+          <span className="inline-flex items-center gap-2"><span className="h-3 w-3 rounded-full bg-[#aab3c1]" /> Altre province</span>
+          <span className="inline-flex items-center gap-2"><span className="h-3 w-3 rounded-full bg-[#d4af37]" /> Selezionata</span>
+        </div>
+        <p className="mt-3 text-xs text-muted-foreground">Contorno geografico reale semplificato; i punti indicano i capoluoghi, non i confini provinciali.</p>
+      </div>
+      <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+        {!selected ? (
+          <div className="flex min-h-[240px] flex-col items-center justify-center text-center text-muted-foreground">
+            <MapPin className="h-9 w-9 text-primary" />
+            <h3 className="mt-4 font-serif text-xl font-bold text-foreground">Esplora il territorio</h3>
+            <p className="mt-3 text-sm">Seleziona una delle nove province, anche se non ha ancora aziende aderenti.</p>
+          </div>
+        ) : (
+          <div>
+            <div className="flex items-center justify-between gap-3"><h3 className="font-serif text-2xl font-bold">{selected}</h3><button type="button" onClick={() => setSelected(null)} aria-label="Chiudi provincia" className="rounded-full p-2 hover:bg-muted"><X className="h-5 w-5" /></button></div>
+            <p className="mt-2 text-sm text-muted-foreground">{selectedAziende.length} {selectedAziende.length === 1 ? "azienda aderente" : "aziende aderenti"}</p>
+            {selectedAziende.length === 0 ? <p className="mt-6 rounded-xl bg-muted/40 p-5 text-sm text-muted-foreground">Nessuna azienda aderente pubblicata per questa provincia.</p> : (
+              <div className="mt-5 space-y-3">{selectedAziende.map((a) => <div key={a.id} className="rounded-xl border border-border bg-background p-4"><h4 className="font-serif text-lg font-bold">{a.nome}</h4><p className="text-sm text-secondary">{a.comune}</p><p className="mt-1 text-xs text-muted-foreground">{a.settore}</p><a href={a.slug ? `/aziende/${encodeURIComponent(a.slug)}` : "#imprese"} className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-primary">Vedi scheda <ArrowRight className="h-4 w-4" /></a></div>)}</div>
+            )}
+            <a href="#imprese" className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-primary">Scopri tutte le aziende <ArrowRight className="h-4 w-4" /></a>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
