@@ -6,15 +6,15 @@ type Ring = number[][];
 type Feature = { properties: { name: string; code: string }; geometry: { type: "Polygon"; coordinates: Ring[] } | { type: "MultiPolygon"; coordinates: Ring[][] } };
 type Collection = { type: "FeatureCollection"; features: Feature[] };
 const provinces = [
-  { name: "Trapani", code: "TP", lon: 12.65, lat: 37.88 },
-  { name: "Palermo", code: "PA", lon: 13.45, lat: 37.93 },
-  { name: "Messina", code: "ME", lon: 14.9, lat: 38.06 },
-  { name: "Agrigento", code: "AG", lon: 13.5, lat: 37.4 },
-  { name: "Caltanissetta", code: "CL", lon: 14.02, lat: 37.28 },
-  { name: "Enna", code: "EN", lon: 14.37, lat: 37.62 },
-  { name: "Catania", code: "CT", lon: 14.92, lat: 37.57 },
-  { name: "Siracusa", code: "SR", lon: 15.02, lat: 37.08 },
-  { name: "Ragusa", code: "RG", lon: 14.66, lat: 36.91 },
+  { name: "Trapani", code: "TP", lon: 12.65, lat: 37.88, labelAngle: 0 },
+  { name: "Palermo", code: "PA", lon: 13.45, lat: 37.93, labelAngle: 0 },
+  { name: "Messina", code: "ME", lon: 14.9, lat: 38.06, labelAngle: -8 },
+  { name: "Agrigento", code: "AG", lon: 13.5, lat: 37.4, labelAngle: 30 },
+  { name: "Caltanissetta", code: "CL", lon: 14.02, lat: 37.28, labelAngle: 55 },
+  { name: "Enna", code: "EN", lon: 14.37, lat: 37.62, labelAngle: 0 },
+  { name: "Catania", code: "CT", lon: 14.92, lat: 37.57, labelAngle: -48 },
+  { name: "Siracusa", code: "SR", lon: 15.02, lat: 37.08, labelAngle: 58 },
+  { name: "Ragusa", code: "RG", lon: 14.66, lat: 36.91, labelAngle: 25 },
 ];
 const normalize = (value: string) => value.trim().toLocaleLowerCase("it");
 // Local Mercator projection; the inset preserves the remote islands without shrinking Sicily.
@@ -88,14 +88,15 @@ export function SicilyMap({ imprese }: { imprese: DbAzienda[] }) {
               {provinces.map(p => {
                 const [x, y] = project(p.lon, p.lat);
                 const total = byProvince[p.name].length;
+                const labelColor = total && selected !== p.name && hovered !== p.name ? "#fff8e9" : "#102c46";
                 return <g key={p.code} transform={`translate(${x} ${y})`} pointerEvents={total ? "auto" : "none"}>
-                  {total > 0 && <g role="button" tabIndex={0} aria-label={`Mostra ${total} aziende di ${p.name}, posizione aggregata provinciale`} aria-pressed={selected === p.name} className="group cursor-pointer outline-none" onClick={() => select(p.name)} onMouseEnter={() => setHovered(p.name)} onMouseLeave={() => setHovered(null)} onFocus={() => setHovered(p.name)} onBlur={() => setHovered(null)} onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); select(p.name); } }}>
+                  {total > 0 && <g transform="translate(0 -36)" role="button" tabIndex={0} aria-label={`Mostra ${total} aziende di ${p.name}, posizione aggregata provinciale`} aria-pressed={selected === p.name} className="group cursor-pointer outline-none" onClick={() => select(p.name)} onMouseEnter={() => setHovered(p.name)} onMouseLeave={() => setHovered(null)} onFocus={() => setHovered(p.name)} onBlur={() => setHovered(null)} onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); select(p.name); } }}>
                     <title>{p.name}: {total} aziende · indicatore provinciale</title>
                     <circle r="20" cy="-7" fill="#d9b665" fillOpacity="0.15" className="group-focus-visible:stroke-[#102c46] group-focus-visible:stroke-[3]" />
                     <path d="M0 10 C-5 3 -13 -3 -13 -10 A13 13 0 1 1 13 -10 C13 -3 5 3 0 10Z" fill="#d9b665" stroke="#fff8e9" strokeWidth="1.5" />
                     <text y="-6" textAnchor="middle" fontSize="11" fontWeight="bold" fill="#102c46">{total}</text>
                   </g>}
-                  <text y={total ? 27 : 5} textAnchor="middle" fontSize="13" fontWeight="600" fill="#102c46" stroke="#f7f9fa" strokeWidth="4" paintOrder="stroke" pointerEvents="none">{p.code}</text>
+                  <text transform={`rotate(${p.labelAngle})`} textAnchor="middle" dominantBaseline="central" fontSize={p.name === "Caltanissetta" ? 19 : 22} fontWeight="600" fill={labelColor} stroke={labelColor === "#102c46" ? "#f7f9fa" : "#173a57"} strokeWidth="2" strokeLinejoin="round" paintOrder="stroke" pointerEvents="none">{p.name}</text>
                 </g>;
               })}
               {active && <g pointerEvents="none"><rect x="300" y="655" width="440" height="38" rx="12" fill="#102c46"/><text x="520" y="679" textAnchor="middle" fontSize="15" fill="#f4dfb0">{active} · {byProvince[active].length} aziende aderenti</text></g>}
